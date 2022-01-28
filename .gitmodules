@@ -1,0 +1,3 @@
+[submodule "Dina/vendor/spdlog"]
+	path = Dina/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git

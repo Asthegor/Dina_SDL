@@ -1,0 +1,6 @@
+#directories
+.git/
+.vs/
+bin/
+bin-int/
+SandBox/
