@@ -23,7 +23,7 @@
 
 
 /**************************************       Warning C4251/C4275       **************************************/
-// Fichier Game.h
+// File Game.h
 #include <string>
 namespace Dina
 {
@@ -33,7 +33,7 @@ namespace Dina
 	template class DINA_API std::_Compressed_pair<std::allocator<char>, std::_String_val<std::_Simple_types<char>>, true>;
 	template class DINA_API std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
 }
-// Fichier GameState.h
+// File GameState.h
 #include "Dina/Scene/State.h"
 #include <map>
 namespace Dina
@@ -43,13 +43,13 @@ namespace Dina
 	template class DINA_API std::_Compressed_pair<std::less<std::string>, std::_Compressed_pair<std::allocator<std::_Tree_node<std::pair<const std::string, Dina::State*>, std::_Default_allocator_traits<std::string>::void_pointer>>, std::_Tree_val<std::_Tree_simple_types<std::pair<const std::string, Dina::State*>>>, true>, true>;
 	template class DINA_API std::map<std::string, Dina::State*, std::less<std::string>, std::allocator<std::pair<const std::string, Dina::State*>>>;
 }
-// Fichier MenuItem.h
+// File MenuItem.h
 #include <functional>
 namespace Dina
 {
 	template class DINA_API std::function<void()>;
 }
-// Fichier MenuManager.h
+// File MenuManager.h
 #include "Dina/Menu/MenuItem.h"
 #include <vector>
 namespace Dina
@@ -58,18 +58,26 @@ namespace Dina
 	template class DINA_API std::_Compressed_pair<std::allocator<Dina::MenuItem*>, std::_Vector_val<std::_Simple_types<Dina::MenuItem*>>, true>;
 	template class DINA_API std::vector<Dina::MenuItem*, std::allocator<Dina::MenuItem*>>;
 }
-// Fichier Random.h
+// File Random.h
 #include <random>
 namespace Dina
 {
 	template class DINA_API std::mersenne_twister_engine<unsigned int, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>;
 	//template class DINA_API std::random_device;
 }
-// Fichier Animation.h
+// File Animation.h
 namespace Dina
 {
 	template class DINA_API std::_Vector_val<std::_Simple_types<Dina::Texture*>>;
 	template class DINA_API std::_Compressed_pair<std::allocator<Dina::Texture*>, std::_Vector_val<std::_Simple_types<Dina::Texture*>>, true>;
 	template class DINA_API std::vector<Dina::Texture*, std::allocator<Dina::Texture*>>;
+}
+// File Spritesheet.h
+#include "Dina/Graphic/Sprite.h"
+namespace Dina
+{
+	template class DINA_API std::_Vector_val<std::_Simple_types<Dina::Sprite*>>;
+	template class DINA_API std::_Compressed_pair<std::allocator<Dina::Sprite*>, std::_Vector_val<std::_Simple_types<Dina::Sprite*>>, true>;
+	template class DINA_API std::vector<Dina::Sprite*, std::allocator<Dina::Sprite*>>;
 }
 /*************************************************************************************************************/

@@ -2,7 +2,7 @@
 #include <SDL.h>
 #include "Texture.h"
 #include "Quad.h"
-
+#include "Sprite.h"
 
 namespace Dina
 {
@@ -27,7 +27,7 @@ namespace Dina
 		//Drawing
 		static void DrawTexture(Texture* texture);
 		static void DrawSurface(SDL_Surface* surface, int x = 0, int y = 0);
-
+		static void DrawSprite(Sprite* sprite);
 
 		static void Clear();
 		static void Render();
@@ -37,6 +37,7 @@ namespace Dina
 		static Graphic* GetInstance();
 		static void DestroyInstance();
 		static Graphic* m_Instance;
+		static Quad* m_ScreenDimensions;
 		SDL_Renderer* m_Renderer;
 		SDL_Window* m_Window;
 		~Graphic();

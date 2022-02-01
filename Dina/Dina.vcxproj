@@ -114,6 +114,8 @@ xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)
     <ClInclude Include="src\Dina\Controllers\Gamepad.h" />
     <ClInclude Include="src\Dina\Controllers\Keyboard.h" />
     <ClInclude Include="src\Dina\Graphic\Animation.h" />
+    <ClInclude Include="src\Dina\Graphic\Sprite.h" />
+    <ClInclude Include="src\Dina\Graphic\Spritesheet.h" />
     <ClInclude Include="src\Dina\Levels\Level.h" />
     <ClInclude Include="src\Dina\Levels\LevelManager.h" />
     <ClInclude Include="src\Dina\Core\Component.h" />
@@ -147,6 +149,8 @@ xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)
     <ClCompile Include="src\Dina\Collisions\Collisions.cpp" />
     <ClCompile Include="src\Dina\Controllers\Keyboard.cpp" />
     <ClCompile Include="src\Dina\Graphic\Animation.cpp" />
+    <ClCompile Include="src\Dina\Graphic\Sprite.cpp" />
+    <ClCompile Include="src\Dina\Graphic\Spritesheet.cpp" />
     <ClCompile Include="src\Dina\Levels\Level.cpp" />
     <ClCompile Include="src\Dina\Levels\LevelManager.cpp" />
     <ClCompile Include="src\Dina\Scene\GameState.cpp" />

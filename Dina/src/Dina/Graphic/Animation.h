@@ -2,6 +2,7 @@
 #include "Dina/Core/Component.h"
 #include "Texture.h"
 #include "Quad.h"
+#include "Spritesheet.h"
 
 namespace Dina
 {
@@ -9,6 +10,7 @@ namespace Dina
     {
     public:
         Animation(const char* fileName, const char* extWithDot, int nbImages, double frameRate);
+        Animation(const char* fileName, int tileWidth, int tileHeight, double frameRate, bool invertDir = false);
         virtual ~Animation();
 
         void Load();
@@ -21,9 +23,13 @@ namespace Dina
 
     private:
         std::vector<Texture*> m_Animation;
+        Spritesheet* m_Spritesheet = nullptr;
         int m_Frame = 0;
         double m_FrameRate = 0.0;
         double m_Timer = 0.0;
+        bool m_UsingSpritesheet = false;
+        short m_Dir = 1;
+        bool m_UsingInvertDir = false;
     };
 
 }

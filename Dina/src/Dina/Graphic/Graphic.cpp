@@ -45,16 +45,20 @@ namespace Dina
 
 	Quad* Graphic::GetDimensions()
 	{
-		int width;
-		int height;
-		int result = SDL_GetRendererOutputSize(GetInstance()->m_Renderer, &width, &height);
-
-		if (result != 0)
+		if (!m_ScreenDimensions)
 		{
-			DINA_CORE_ERROR("Unable to retreive the rendering dimensions. Error: {0}", SDL_GetError());
-			return nullptr;
+			int width;
+			int height;
+			int result = SDL_GetRendererOutputSize(GetInstance()->m_Renderer, &width, &height);
+
+			if (result != 0)
+			{
+				DINA_CORE_ERROR("Unable to retreive the rendering dimensions. Error: {0}", SDL_GetError());
+				return nullptr;
+			}
+			m_ScreenDimensions = new Quad { 0, 0, width, height };
 		}
-		return new Quad{ 0, 0, width, height };
+		return m_ScreenDimensions;
 	}
 
 	void Graphic::ShowCursor(bool show)
@@ -104,6 +108,13 @@ namespace Dina
 		delete texture;
 	}
 
+	void Graphic::DrawSprite(Sprite* sprite)
+	{
+		SDL_Rect rectPos = sprite->GetDimensions()->ToSDLRect();
+		SDL_Rect rectImg = sprite->GetImgPosInSheet()->ToSDLRect();
+		SDL_RenderCopy(GetInstance()->m_Renderer, sprite->GetTexture(), &rectImg, &rectPos);
+	}
+
 	void Graphic::Quit()
 	{
 		DestroyInstance();
@@ -119,6 +130,7 @@ namespace Dina
 	}
 
 	Graphic* Graphic::m_Instance = nullptr;
+	Quad* Graphic::m_ScreenDimensions = nullptr;
 
 	Graphic* Graphic::GetInstance()
 	{
