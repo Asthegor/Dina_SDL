@@ -25,6 +25,8 @@
 #include "Dina/Graphic/Font.h"
 #include "Dina/Graphic/Quad.h"
 #include "Dina/Graphic/Animation.h"
+#include "Dina/Graphic/Spritesheet.h"
+#include "Dina/Graphic/Sprite.h"
 
 
 // Menu

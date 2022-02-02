@@ -11,7 +11,7 @@ namespace Dina
 		Sprite(Texture* texture, int x, int y, int width, int height);
 		~Sprite();
 
-		SDL_Texture* GetTexture() const;
+		Texture* GetTexture() const;
 
 		Quad* GetImgPosInSheet() const;
 		Quad* GetDimensions() const;

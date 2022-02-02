@@ -24,8 +24,17 @@ namespace Dina
 		m_FrameRate(frameRate), m_UsingSpritesheet(true), m_UsingInvertDir(invertDir)
 	{
 		m_Spritesheet = new Spritesheet { fileName, tileWidth, tileHeight };
+		for (int i = 0; i < m_Spritesheet->GetNbSprites(); ++i)
+			m_Sprites.push_back(m_Spritesheet->GetSprite(i));
 	}
-
+	Animation::Animation(Spritesheet* spriteSheet, std::vector<int> tileNumbers, double frameRate, bool invertDir) :
+		m_Spritesheet(spriteSheet), m_FrameRate(frameRate), m_UsingSpritesheet(true), m_UsingInvertDir(invertDir)
+	{
+		for (int num : tileNumbers)
+		{
+			m_Sprites.push_back(m_Spritesheet->GetSprite(num));
+		}
+	}
 	Animation::~Animation()
 	{
 		for (auto& anim : m_Animation)
@@ -34,6 +43,7 @@ namespace Dina
 			anim = nullptr;
 		}
 		m_Animation.clear();
+		m_Sprites.clear();
 		delete m_Spritesheet;
 	}
 	void Animation::Load()
@@ -48,9 +58,9 @@ namespace Dina
 
 			if (m_UsingSpritesheet)
 			{
-				if (m_UsingInvertDir && (m_Frame <= 0 || m_Frame >= m_Spritesheet->GetNbSprites() - 1))
+				if (m_UsingInvertDir && (m_Frame <= 0 || m_Frame >= m_Sprites.size() - 1))
 					m_Dir *= -1;
-				else if (m_Frame >= m_Spritesheet->GetNbSprites())
+				else if (m_Frame >= m_Sprites.size())
 					m_Frame = 0;
 			}
 			else if (m_Frame >= m_Animation.size())
@@ -61,8 +71,8 @@ namespace Dina
 	{
 		if (m_UsingSpritesheet)
 		{
-			if (m_Frame >= 0 && m_Frame < m_Spritesheet->GetNbSprites() && m_Spritesheet->GetSprite(m_Frame))
-				Graphic::DrawSprite(m_Spritesheet->GetSprite(m_Frame));
+			if (m_Frame >= 0 && m_Frame < m_Sprites.size() && m_Sprites[m_Frame])
+				Graphic::DrawSprite(m_Sprites[m_Frame]);
 		}
 		else
 		{

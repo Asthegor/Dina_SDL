@@ -112,7 +112,7 @@ namespace Dina
 	{
 		SDL_Rect rectPos = sprite->GetDimensions()->ToSDLRect();
 		SDL_Rect rectImg = sprite->GetImgPosInSheet()->ToSDLRect();
-		SDL_RenderCopy(GetInstance()->m_Renderer, sprite->GetTexture(), &rectImg, &rectPos);
+		SDL_RenderCopy(GetInstance()->m_Renderer, sprite->GetTexture()->GetTexture(), &rectImg, &rectPos);
 	}
 
 	void Graphic::Quit()

@@ -85,7 +85,6 @@ namespace Dina
 			return;
 
 		Quad* screen = Graphic::GetDimensions();
-
 		int nextHeight = 0;
 		for (int i = 0; i < items.size(); ++i)
 		{
@@ -94,7 +93,6 @@ namespace Dina
 			itemDimension->y = i == 0 ? m_ItemsStartHeight : nextHeight;
 			nextHeight = itemDimension->y + itemDimension->height + m_ItemsPadding;
 		}
-		delete screen;
 	}
 
 

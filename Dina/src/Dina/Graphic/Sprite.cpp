@@ -15,9 +15,9 @@ namespace Dina
 	{
 		delete m_SpritesheetPosition;
 	}
-	SDL_Texture* Sprite::GetTexture() const
+	Texture* Sprite::GetTexture() const
 	{
-		return m_Texture->GetTexture();
+		return m_Texture;
 	}
 	Quad* Sprite::GetImgPosInSheet() const
 	{
