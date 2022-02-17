@@ -47,13 +47,13 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)bin-int\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
-    <LibraryPath>$(ProjectDir)vendor\SDL2\lib\x64\;$(ProjectDir)vendor\SDL2_image\lib\x64\;$(ProjectDir)vendor\SDL2_ttf\lib\x64\;$(ProjectDir)vendor\SDL2_mixer\lib\x64\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)vendor\SDL2\lib\x64\;$(ProjectDir)vendor\SDL2_image\lib\x64\;$(ProjectDir)vendor\SDL2_ttf\lib\x64\;$(ProjectDir)vendor\SDL2_mixer\lib\x64\;$(ProjectDir)vendor\libxml2\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)bin-int\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
-    <LibraryPath>$(ProjectDir)vendor\SDL2\lib\x64\;$(ProjectDir)vendor\SDL2_image\lib\x64\;$(ProjectDir)vendor\SDL2_ttf\lib\x64\;$(ProjectDir)vendor\SDL2_mixer\lib\x64\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)vendor\SDL2\lib\x64\;$(ProjectDir)vendor\SDL2_image\lib\x64\;$(ProjectDir)vendor\SDL2_ttf\lib\x64\;$(ProjectDir)vendor\SDL2_mixer\lib\x64\;$(ProjectDir)vendor\libxml2\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -61,22 +61,24 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>DINA_BUILD_DLL;DINA_ENABLE_ASSERTS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\SDL2\include;$(ProjectDir)vendor\SDL2_image\include;$(ProjectDir)vendor\SDL2_ttf\include;$(ProjectDir)vendor\SDL2_mixer\include;$(ProjectDir)vendor\tileson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\SDL2\include;$(ProjectDir)vendor\SDL2_image\include;$(ProjectDir)vendor\SDL2_ttf\include;$(ProjectDir)vendor\SDL2_mixer\include;$(ProjectDir)vendor\libxml2\include\libxml2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>dinapch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;libxml2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(SolutionDir)bin\$(Platform)-$(Configuration)\$(ProjectName)\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y
+      <Command>xcopy $(SolutionDir)bin\$(Platform)-$(Configuration)\$(ProjectName)\Dina.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y
 xcopy $(ProjectDir)vendor\SDL2\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\ /h /i /c /k /e /r /y
 xcopy $(ProjectDir)vendor\SDL2_image\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\ /h /i /c /k /e /r /y
 xcopy $(ProjectDir)vendor\SDL2_ttf\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y
-xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y</Command>
+xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y
+xcopy $(ProjectDir)vendor\libxml2\bin\libxml2d.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -87,29 +89,32 @@ xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>DINA_BUILD_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\SDL2\include;$(ProjectDir)vendor\SDL2_image\include;$(ProjectDir)vendor\SDL2_ttf\include;$(ProjectDir)vendor\SDL2_mixer\include;$(ProjectDir)vendor\tileson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\SDL2\include;$(ProjectDir)vendor\SDL2_image\include;$(ProjectDir)vendor\SDL2_ttf\include;$(ProjectDir)vendor\SDL2_mixer\include;$(ProjectDir)vendor\libxml2\include\libxml2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>dinapch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;libxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(SolutionDir)bin\$(Platform)-$(Configuration)\$(ProjectName)\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y
+      <Command>xcopy $(SolutionDir)bin\$(Platform)-$(Configuration)\$(ProjectName)\Dina.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y
 xcopy $(ProjectDir)vendor\SDL2\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\ /h /i /c /k /e /r /y
 xcopy $(ProjectDir)vendor\SDL2_image\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\ /h /i /c /k /e /r /y
 xcopy $(ProjectDir)vendor\SDL2_ttf\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y
-xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y</Command>
+xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y
+xcopy $(ProjectDir)vendor\libxml2\bin\libxml2.dll $(SolutionDir)bin\$(Platform)-$(Configuration)\SandBox\  /h /i /c /k /e /r /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\dinapch.h" />
-    <ClInclude Include="src\Dina\Collisions\Collisions.h" />
+    <ClInclude Include="src\Dina\Levels\MapGenerator.h" />
+    <ClInclude Include="src\Dina\Utils\Collisions.h" />
     <ClInclude Include="src\Dina\Controllers\Controller.h" />
     <ClInclude Include="src\Dina\Controllers\Gamepad.h" />
     <ClInclude Include="src\Dina\Controllers\Keyboard.h" />
@@ -117,7 +122,6 @@ xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)
     <ClInclude Include="src\Dina\Graphic\Sprite.h" />
     <ClInclude Include="src\Dina\Graphic\Spritesheet.h" />
     <ClInclude Include="src\Dina\Levels\Level.h" />
-    <ClInclude Include="src\Dina\Levels\LevelManager.h" />
     <ClInclude Include="src\Dina\Core\Component.h" />
     <ClInclude Include="src\Dina\Core\Core.h" />
     <ClInclude Include="src\Dina\Core\EntryPoint.h" />
@@ -136,8 +140,15 @@ xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)
     <ClInclude Include="src\Dina\Graphic\Texture.h" />
     <ClInclude Include="src\Dina\Menu\MenuItem.h" />
     <ClInclude Include="src\Dina\Menu\MenuManager.h" />
-    <ClInclude Include="src\Dina\Time\GameTime.h" />
+    <ClInclude Include="src\Dina\Utils\FastNoiseLite.h" />
+    <ClInclude Include="src\Dina\Utils\GameTime.h" />
+    <ClInclude Include="src\Dina\Utils\PerlinNoise.h" />
+    <ClInclude Include="src\Dina\Utils\Random.h" />
+    <ClInclude Include="src\Dina\Utils\SimplexNoise.h" />
+    <ClInclude Include="src\Dina\Utils\Utils.h" />
     <ClInclude Include="vendor\JSON\json.hpp" />
+    <ClInclude Include="src\Dina\Levels\tmx.h" />
+    <ClInclude Include="src\Dina\Levels\tmx_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Dina\Controllers\Controller.cpp" />
@@ -146,13 +157,13 @@ xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Dina\Collisions\Collisions.cpp" />
+    <ClCompile Include="src\Dina\Levels\MapGenerator.cpp" />
+    <ClCompile Include="src\Dina\Utils\Collisions.cpp" />
     <ClCompile Include="src\Dina\Controllers\Keyboard.cpp" />
     <ClCompile Include="src\Dina\Graphic\Animation.cpp" />
     <ClCompile Include="src\Dina\Graphic\Sprite.cpp" />
     <ClCompile Include="src\Dina\Graphic\Spritesheet.cpp" />
     <ClCompile Include="src\Dina\Levels\Level.cpp" />
-    <ClCompile Include="src\Dina\Levels\LevelManager.cpp" />
     <ClCompile Include="src\Dina\Scene\GameState.cpp" />
     <ClCompile Include="src\Dina\Core\Log.cpp" />
     <ClCompile Include="src\Dina\Core\DinaGame.cpp" />
@@ -164,7 +175,18 @@ xcopy $(ProjectDir)vendor\SDL2_mixer\lib\x64\*.dll $(SolutionDir)bin\$(Platform)
     <ClCompile Include="src\Dina\Graphic\Texture.cpp" />
     <ClCompile Include="src\Dina\Menu\MenuItem.cpp" />
     <ClCompile Include="src\Dina\Menu\MenuManager.cpp" />
-    <ClCompile Include="src\Dina\Time\GameTime.cpp" />
+    <ClCompile Include="src\Dina\Utils\FatnoiseLite.cpp" />
+    <ClCompile Include="src\Dina\Utils\GameTime.cpp" />
+    <ClCompile Include="src\Dina\Levels\tmx.cpp" />
+    <ClCompile Include="src\Dina\Levels\tmx_err.cpp" />
+    <ClCompile Include="src\Dina\Levels\tmx_hash.cpp" />
+    <ClCompile Include="src\Dina\Levels\tmx_mem.cpp" />
+    <ClCompile Include="src\Dina\Levels\tmx_utils.cpp" />
+    <ClCompile Include="src\Dina\Levels\tmx_xml.cpp" />
+    <ClCompile Include="src\Dina\Utils\PerlinNoise.cpp" />
+    <ClCompile Include="src\Dina\Utils\Random.cpp" />
+    <ClCompile Include="src\Dina\Utils\SimplexNoise.cpp" />
+    <ClCompile Include="src\Dina\Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\Logo.png" />

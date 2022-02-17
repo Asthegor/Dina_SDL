@@ -11,7 +11,9 @@ namespace Dina
 	{
 	public:
 		Spritesheet(const char* fileName, int tileWidth, int tileHeight);
+		Spritesheet(Texture* texture, int tileWidth, int tileHeight);
 		Spritesheet(const char* fileName, int tileWidth, int tileHeight, std::vector<int> tileNumbers);
+		Spritesheet(Texture* texure, int tileWidth, int tileHeight, std::vector<int> tileNumbers);
 
 		~Spritesheet();
 

@@ -15,7 +15,8 @@ namespace Dina
 		~Font();
 
 		SDL_Surface* GetSurface();
-
+		void SetText(const char* text);
+		void SetText(std::string text);
 
 	private:
 		void CreateSurface();

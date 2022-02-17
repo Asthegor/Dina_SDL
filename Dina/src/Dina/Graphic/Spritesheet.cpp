@@ -5,7 +5,11 @@
 namespace Dina
 {
 	Spritesheet::Spritesheet(const char* fileName, int tileWidth, int tileHeight) :
-		m_Texture(new Texture(fileName))
+		Spritesheet { new Texture(fileName), tileWidth, tileHeight }
+	{
+	}
+	Spritesheet::Spritesheet(Texture* texture, int tileWidth, int tileHeight) :
+		m_Texture(texture)
 	{
 		int width = 0, height = 0;
 		Quad textureDimensions = *m_Texture->GetDimensions();
@@ -20,7 +24,11 @@ namespace Dina
 		}
 	}
 	Spritesheet::Spritesheet(const char* fileName, int tileWidth, int tileHeight, std::vector<int> tileNumbers) :
-		m_Texture(new Texture(fileName))
+		Spritesheet { new Texture(fileName), tileWidth, tileHeight, tileNumbers }
+	{
+	}
+	Spritesheet::Spritesheet(Texture* texture, int tileWidth, int tileHeight, std::vector<int> tileNumbers) :
+		m_Texture(texture)
 	{
 		int width = 0, height = 0;
 		Quad textureDimensions = *m_Texture->GetDimensions();
@@ -31,7 +39,7 @@ namespace Dina
 			{
 				width = x + tileWidth <= textureDimensions.width ? tileWidth : textureDimensions.width - x;
 				height = y + tileHeight <= textureDimensions.height ? tileHeight : textureDimensions.height - y;
-				if(std::find(tileNumbers.begin(), tileNumbers.end(), tileNum) != tileNumbers.end())
+				if (std::find(tileNumbers.begin(), tileNumbers.end(), tileNum) != tileNumbers.end())
 					m_Sprites.push_back(new Sprite { m_Texture, x, y, width, height });
 				++tileNum;
 			}

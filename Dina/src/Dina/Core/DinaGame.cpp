@@ -1,7 +1,7 @@
 #include "dinapch.h"
 #include "DinaGame.h"
 #include "Dina/Scene/GameState.h"
-#include "Dina/Time/GameTime.h"
+#include "Dina/Utils/GameTime.h"
 #include "Dina/Graphic/Graphic.h"
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -62,7 +62,7 @@ namespace Dina
 		while (!m_Quit)
 		{
 			double deltatime = GameTime::GetElapsedTime();
-
+			double ticks = SDL_GetTicks();
 			//DINA_CORE_TRACE("Traitement des événements.");
 
 			m_Quit = Dina::EventManager::Execute();
@@ -70,7 +70,7 @@ namespace Dina
 			Graphic::SetBackgroundColor(m_BackgroundColor);
 
 			//DINA_CORE_TRACE("Mise à jour des données (update).");
-			Update(deltatime);
+			Update(deltatime, ticks);
 
 			Graphic::Clear();
 

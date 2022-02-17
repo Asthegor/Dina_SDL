@@ -1,6 +1,8 @@
 #pragma once
+
 namespace Dina
 {
+
 	class DINA_API Quad
 	{
 	public:

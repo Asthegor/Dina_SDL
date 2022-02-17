@@ -20,6 +20,7 @@ namespace Dina
 
 		//Loading
 		static SDL_Texture* LoadTexture(const char* filePath);
+		static void* LoadVoidTexture(const char* filePath);
 
 		//Conversions
 		static SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
@@ -28,6 +29,11 @@ namespace Dina
 		static void DrawTexture(Texture* texture);
 		static void DrawSurface(SDL_Surface* surface, int x = 0, int y = 0);
 		static void DrawSprite(Sprite* sprite);
+		static void DrawPolyline(double** points, double x, double y, int pointsc, SDL_Color color = {255,255,255,255});
+		static void DrawLine(int x1, int y1, int x2, int y2, SDL_Color color = { 255,255,255,255 });
+		static void DrawRectangle(Quad quad);
+		static void DrawFPoint(FPoint point, SDL_Color color = { 255,255,255,255 });
+		static void DrawPoint(Point point, SDL_Color color = { 255,255,255,255 });
 
 		static void Clear();
 		static void Render();

@@ -2,7 +2,7 @@
 #include "MenuManager.h"
 #include "Dina/Graphic/Graphic.h"
 #include "Dina/Events/EventManager.h"
-#include "Dina/Collisions/Collisions.h"
+#include "Dina/Utils/Collisions.h"
 
 namespace Dina
 {

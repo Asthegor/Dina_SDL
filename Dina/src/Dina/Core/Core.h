@@ -19,6 +19,7 @@
 #endif // DINA_ENABLE_ASSERTS
 
 
+#define TMXEXPORT DINA_API
 
 
 
@@ -63,7 +64,6 @@ namespace Dina
 namespace Dina
 {
 	template class DINA_API std::mersenne_twister_engine<unsigned int, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>;
-	//template class DINA_API std::random_device;
 }
 // File Animation.h
 namespace Dina
@@ -79,5 +79,13 @@ namespace Dina
 	template class DINA_API std::_Vector_val<std::_Simple_types<Dina::Sprite*>>;
 	template class DINA_API std::_Compressed_pair<std::allocator<Dina::Sprite*>, std::_Vector_val<std::_Simple_types<Dina::Sprite*>>, true>;
 	template class DINA_API std::vector<Dina::Sprite*, std::allocator<Dina::Sprite*>>;
+}
+//File MapGenerator.h
+#include "Dina/Graphic/Texture.h"
+namespace Dina
+{
+	template class DINA_API std::_Vector_val<std::_Simple_types<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>>>;
+	template class DINA_API std::_Compressed_pair<std::allocator<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>>, std::_Vector_val<std::_Simple_types<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>>>, true>;
+	template class DINA_API std::vector<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>, std::allocator<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>>>;
 }
 /*************************************************************************************************************/

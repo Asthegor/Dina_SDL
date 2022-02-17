@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 
+
 // Core
 #include "Dina/Core/DinaGame.h"
 #include "Dina/Core/Log.h"
@@ -40,9 +41,15 @@
 #include "Dina/Events/EventManager.h"
 
 
-// Random
-#include "Dina/Random/Random.h"
+// Utils
+#include "Dina/Utils/Random.h"
+#include "Dina/Utils/Collisions.h"
+#include "Dina/Utils/PerlinNoise.h"
+#include "Dina/Utils/SimplexNoise.h"
 
+// Level
+#include "Dina/Levels/Level.h"
+#include "Dina/Levels/MapGenerator.h"
 
 // Point d'entrée (fonction main)
 #include "Dina/Core/EntryPoint.h"

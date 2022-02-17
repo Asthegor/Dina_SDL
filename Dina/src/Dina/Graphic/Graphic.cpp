@@ -3,6 +3,7 @@
 #include "Graphic.h"
 #include "Texture.h"
 #include <SDL_image.h>
+#include <SDL.h>
 
 namespace Dina
 {
@@ -91,13 +92,19 @@ namespace Dina
 		return texture;
 	}
 
+	void* Graphic::LoadVoidTexture(const char* filePath)
+	{
+		return reinterpret_cast<void*>(LoadTexture(filePath));
+	}
+
 	void Graphic::DrawTexture(Texture* texture)
 	{
 		if (texture)
 		{
 			Dina::Quad* quad = texture->GetDimensions();
 			SDL_Rect rect = quad->ToSDLRect();
-			SDL_RenderCopy(GetInstance()->m_Renderer, texture->GetTexture(), nullptr, &rect);
+			int success = SDL_RenderCopyEx(GetInstance()->m_Renderer, texture->GetTexture(), nullptr, &rect,texture->GetAngle(), (SDL_Point*) texture->GetOrigin(), texture->GetFlip());
+			DINA_CORE_ASSERT((success == 0), "Unable to draw the given texture - Error: {0}", SDL_GetError());
 		}
 	}
 
@@ -112,7 +119,44 @@ namespace Dina
 	{
 		SDL_Rect rectPos = sprite->GetDimensions()->ToSDLRect();
 		SDL_Rect rectImg = sprite->GetImgPosInSheet()->ToSDLRect();
-		SDL_RenderCopy(GetInstance()->m_Renderer, sprite->GetTexture()->GetTexture(), &rectImg, &rectPos);
+		SDL_RenderCopyEx(GetInstance()->m_Renderer, 
+						 (SDL_Texture*)sprite->GetTexture(), &rectImg, &rectPos, 
+						 sprite->GetTexture()->GetAngle(), (SDL_Point*)sprite->GetTexture()->GetOrigin(), sprite->GetTexture()->GetFlip());
+	}
+
+	void Graphic::DrawPolyline(double** points, double x, double y, int pointsc, SDL_Color color)
+	{
+		for (int i = 1; i < pointsc; ++i)
+		{
+			DrawLine(static_cast<int>(x + points[i - 1][0]), static_cast<int>(y + points[i - 1][1]), static_cast<int>(x + points[i][0]), static_cast<int>(y + points[i][1]));
+		}
+	}
+
+	void Graphic::DrawLine(int x1, int y1, int x2, int y2, SDL_Color color)
+	{
+		SDL_SetRenderDrawColor(GetInstance()->m_Renderer, color.r, color.g, color.b, color.a);
+		SDL_RenderDrawLine(GetInstance()->m_Renderer, x1, y1, x2, y2);
+	}
+
+	void Graphic::DrawRectangle(Quad quad)
+	{
+		
+		SDL_Rect rect = quad.ToSDLRect();
+		SDL_RenderDrawRect(GetInstance()->m_Renderer, &rect);
+	}
+
+	void Graphic::DrawFPoint(FPoint point, SDL_Color color)
+	{
+		Point p = { static_cast<int>(point.x), static_cast<int>(point.y) };
+		DrawPoint(p, color);
+	}
+
+	void Graphic::DrawPoint(Point point, SDL_Color color)
+	{
+		SDL_SetRenderDrawColor(GetInstance()->m_Renderer, color.r, color.g, color.b, color.a);
+		int success = SDL_RenderDrawPoint(GetInstance()->m_Renderer, point.x, point.y);
+		DINA_CORE_ASSERT(success == 0, "Unable to draw the point [{0},{1}]. Error: {2}", point.x, point.y, SDL_GetError());
+
 	}
 
 	void Graphic::Quit()

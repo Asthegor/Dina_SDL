@@ -24,6 +24,15 @@ namespace Dina
 		return m_Surface;
 	}
 
+	void Font::SetText(const char* text)
+	{
+		m_Text = text;
+	}
+	void Font::SetText(std::string text)
+	{
+		m_Text = text;
+	}
+
 	void Font::CreateSurface()
 	{
 		if (!m_Font)
