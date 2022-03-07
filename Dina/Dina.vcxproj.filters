@@ -126,6 +126,9 @@
     <ClInclude Include="src\Dina\Utils\FastNoiseLite.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dina\Utils\noise1234.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Dina\Core\DinaGame.cpp">
@@ -225,6 +228,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\Dina\Utils\FatnoiseLite.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dina\Utils\noise1234.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

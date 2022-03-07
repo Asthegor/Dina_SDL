@@ -57,12 +57,12 @@ namespace Dina
 		DINA_CORE_TRACE("Loading game datas.");
 		Load();
 
-
+		double deltatime = 0.0;
 		// Boucle de jeu
 		while (!m_Quit)
 		{
-			double deltatime = GameTime::GetElapsedTime();
-			double ticks = SDL_GetTicks();
+
+			deltatime = GameTime::GetElapsedTime();
 			//DINA_CORE_TRACE("Traitement des événements.");
 
 			m_Quit = Dina::EventManager::Execute();
@@ -70,13 +70,12 @@ namespace Dina
 			Graphic::SetBackgroundColor(m_BackgroundColor);
 
 			//DINA_CORE_TRACE("Mise à jour des données (update).");
-			Update(deltatime, ticks);
+			Update(deltatime);
 
 			Graphic::Clear();
 
 			//DINA_CORE_TRACE("Affichage du rendu (draw).");
 			Draw();
-
 			Graphic::Render();
 		}
 		SDL_FreeCursor(cursor);

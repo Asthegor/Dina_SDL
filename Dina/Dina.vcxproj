@@ -142,6 +142,7 @@ xcopy $(ProjectDir)vendor\libxml2\bin\libxml2.dll $(SolutionDir)bin\$(Platform)-
     <ClInclude Include="src\Dina\Menu\MenuManager.h" />
     <ClInclude Include="src\Dina\Utils\FastNoiseLite.h" />
     <ClInclude Include="src\Dina\Utils\GameTime.h" />
+    <ClInclude Include="src\Dina\Utils\noise1234.h" />
     <ClInclude Include="src\Dina\Utils\PerlinNoise.h" />
     <ClInclude Include="src\Dina\Utils\Random.h" />
     <ClInclude Include="src\Dina\Utils\SimplexNoise.h" />
@@ -183,6 +184,7 @@ xcopy $(ProjectDir)vendor\libxml2\bin\libxml2.dll $(SolutionDir)bin\$(Platform)-
     <ClCompile Include="src\Dina\Levels\tmx_mem.cpp" />
     <ClCompile Include="src\Dina\Levels\tmx_utils.cpp" />
     <ClCompile Include="src\Dina\Levels\tmx_xml.cpp" />
+    <ClCompile Include="src\Dina\Utils\noise1234.cpp" />
     <ClCompile Include="src\Dina\Utils\PerlinNoise.cpp" />
     <ClCompile Include="src\Dina\Utils\Random.cpp" />
     <ClCompile Include="src\Dina\Utils\SimplexNoise.cpp" />

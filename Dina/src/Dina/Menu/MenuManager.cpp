@@ -20,8 +20,6 @@ namespace Dina
 		delete m_TitleShadowTexture;
 
 		items.clear();
-
-		//EventDispatcher::Unsubscribe(this);
 	}
 
 	void MenuManager::SetBackground(const char* filePath)

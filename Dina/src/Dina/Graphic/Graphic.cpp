@@ -1,4 +1,4 @@
-#include "dinapch.h"
+﻿#include "dinapch.h"
 
 #include "Graphic.h"
 #include "Texture.h"
@@ -12,7 +12,7 @@ namespace Dina
 
 		int result = SDL_CreateWindowAndRenderer(width, height, SDL_WINDOW_SHOWN, &GetInstance()->m_Window, &GetInstance()->m_Renderer);
 		DINA_CORE_ASSERT(result == 0, "Unable to create window and/or renderer. Error:{0}.", SDL_GetError());
-		
+
 		SDL_SetWindowTitle(GetInstance()->m_Window, title);
 	}
 
@@ -76,7 +76,15 @@ namespace Dina
 
 	SDL_Texture* Graphic::CreateTextureFromSurface(SDL_Surface* surface)
 	{
-		return SDL_CreateTextureFromSurface(GetInstance()->m_Renderer, surface);
+		if (surface)
+		{
+			SDL_Texture* texture = SDL_CreateTextureFromSurface(GetInstance()->m_Renderer, surface);
+			if (!texture)
+				DINA_CORE_ERROR("Unable to create texture. Error: {0}", SDL_GetError());
+
+			return texture;
+		}
+		return nullptr;
 	}
 
 	SDL_Texture* Graphic::LoadTexture(const char* filePath)
@@ -84,7 +92,8 @@ namespace Dina
 		SDL_Texture* texture = nullptr;
 
 		texture = IMG_LoadTexture(GetInstance()->m_Renderer, filePath);
-		if (!texture) {
+		if (!texture)
+		{
 			DINA_CORE_ERROR("Unable to load image \"{0}\". Error: {1}", filePath, SDL_GetError());
 			return nullptr;
 		}
@@ -103,7 +112,7 @@ namespace Dina
 		{
 			Dina::Quad* quad = texture->GetDimensions();
 			SDL_Rect rect = quad->ToSDLRect();
-			int success = SDL_RenderCopyEx(GetInstance()->m_Renderer, texture->GetTexture(), nullptr, &rect,texture->GetAngle(), (SDL_Point*) texture->GetOrigin(), texture->GetFlip());
+			int success = SDL_RenderCopyEx(GetInstance()->m_Renderer, texture->GetTexture(), nullptr, &rect, texture->GetAngle(), (SDL_Point*) texture->GetOrigin(), texture->GetFlip());
 			DINA_CORE_ASSERT((success == 0), "Unable to draw the given texture - Error: {0}", SDL_GetError());
 		}
 	}
@@ -119,9 +128,10 @@ namespace Dina
 	{
 		SDL_Rect rectPos = sprite->GetDimensions()->ToSDLRect();
 		SDL_Rect rectImg = sprite->GetImgPosInSheet()->ToSDLRect();
-		SDL_RenderCopyEx(GetInstance()->m_Renderer, 
-						 (SDL_Texture*)sprite->GetTexture(), &rectImg, &rectPos, 
-						 sprite->GetTexture()->GetAngle(), (SDL_Point*)sprite->GetTexture()->GetOrigin(), sprite->GetTexture()->GetFlip());
+		Texture* texture = sprite->GetTexture();
+		SDL_RenderCopyEx(GetInstance()->m_Renderer,
+						 texture->GetTexture(), &rectImg, &rectPos,
+						 texture->GetAngle(), (SDL_Point*) texture->GetOrigin(), texture->GetFlip());
 	}
 
 	void Graphic::DrawPolyline(double** points, double x, double y, int pointsc, SDL_Color color)
@@ -140,23 +150,90 @@ namespace Dina
 
 	void Graphic::DrawRectangle(Quad quad)
 	{
-		
+
 		SDL_Rect rect = quad.ToSDLRect();
 		SDL_RenderDrawRect(GetInstance()->m_Renderer, &rect);
 	}
 
-	void Graphic::DrawFPoint(FPoint point, SDL_Color color)
+	void Graphic::DrawPointOnSurface(SDL_Surface* surface, Point point, SDL_Color color)
 	{
-		Point p = { static_cast<int>(point.x), static_cast<int>(point.y) };
-		DrawPoint(p, color);
+		Uint32* const target_pixel = (Uint32*) ((Uint8*) surface->pixels
+												+ point.y * surface->pitch
+												+ point.x * surface->format->BytesPerPixel);
+		Uint32 pixel =
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
+		(color.a << 24) | (color.b << 16) | (color.g << 8) | color.r;
+#else
+			(color.r << 24) | (color.g << 16) | (color.b << 8) | color.a;
+#endif
+		* target_pixel = pixel;
 	}
 
-	void Graphic::DrawPoint(Point point, SDL_Color color)
+	void Graphic::DrawCircleOnSurface(SDL_Surface* surface, Point point, int radius, ShapeMode shapeMode, SDL_Color color)
 	{
-		SDL_SetRenderDrawColor(GetInstance()->m_Renderer, color.r, color.g, color.b, color.a);
-		int success = SDL_RenderDrawPoint(GetInstance()->m_Renderer, point.x, point.y);
-		DINA_CORE_ASSERT(success == 0, "Unable to draw the point [{0},{1}]. Error: {2}", point.x, point.y, SDL_GetError());
+		const int32_t diameter = (radius * 2);
 
+		if (shapeMode == ShapeMode::Line)
+		{
+			int32_t x = (radius - 1);
+			int32_t y = 0;
+			int32_t tx = 1;
+			int32_t ty = 1;
+			int32_t error = (tx - diameter);
+
+
+
+
+			while (x >= y)
+			{
+				//  Each of the following renders an octant of the circle
+				DrawPointOnSurface(surface, { point.x + x, point.y - y }, color);
+				DrawPointOnSurface(surface, { point.x + x, point.y + y }, color);
+				DrawPointOnSurface(surface, { point.x - x, point.y - y }, color);
+				DrawPointOnSurface(surface, { point.x - x, point.y + y }, color);
+				DrawPointOnSurface(surface, { point.x + y, point.y - x }, color);
+				DrawPointOnSurface(surface, { point.x + y, point.y + x }, color);
+				DrawPointOnSurface(surface, { point.x - y, point.y - x }, color);
+				DrawPointOnSurface(surface, { point.x - y, point.y + x }, color);
+
+				if (error <= 0)
+				{
+					++y;
+					error += ty;
+					ty += 2;
+				}
+
+				if (error > 0)
+				{
+					--x;
+					tx += 2;
+					error += (tx - diameter);
+				}
+			}
+		}
+		else if (shapeMode == ShapeMode::Fill)
+		{
+			/*
+			procédure tracerSegment(entier x1, entier y1, entier x2, entier y2) est
+				déclarer entier x, y, dx, dy;
+				déclarer entier e; // valeur d’erreur
+				déclarer entier e(1, 0), e(0, 1);  // incréments
+				dy ← y2 - y1;
+				dx ← x2 - x1;
+				y ← y1;  // rangée initiale
+				e ← - dx;  // valeur d’erreur initiale
+				e(1, 0) ←  dy × 2;
+				e(0, 1) ← - dx × 2;
+				pour x variant de x1 jusqu’à x2 par incrément  de 1 faire
+					tracerPixel(x, y);
+				si(e ← e + e(1, 0)) ≥ 0 alors  // erreur pour le pixel suivant de même rangée
+					y ← y + 1;  // choisir plutôt le pixel suivant dans la rangée supérieure
+				e ← e + e(0, 1);  // ajuste l’erreur commise dans cette nouvelle rangée
+				fin si;
+				fin pour;
+			fin procédure;
+			*/
+		}
 	}
 
 	void Graphic::Quit()

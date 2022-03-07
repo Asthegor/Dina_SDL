@@ -8,15 +8,13 @@ namespace Dina
 	MenuItem::MenuItem(const char* text, const char* fontName, int fontSize, SDL_Color color, SDL_Color selectedColor)
 		: m_Text(text)
 	{
-		Font* font;
-		font = new Font(text, fontName, fontSize, Dina::FontRender::Blended, color);
-		if (font)
-		{
-			m_Surface = font->GetSurface();
-		}
+		Font* font = new Font(text, fontName, fontSize, Dina::FontRender::Blended, color);
+		DINA_CORE_ASSERT(font != nullptr, "Unable to create Font object for surface.");
+		m_Surface = font->GetSurface();
 		delete font;
 
 		font = new Font(text, fontName, fontSize, Dina::FontRender::Blended, selectedColor);
+		DINA_CORE_ASSERT(font != nullptr, "Unable to create Font object for selected surface.");
 		m_SelectedSurface = font->GetSurface();
 		delete font;
 
@@ -85,9 +83,10 @@ namespace Dina
 
 	void MenuItem::Draw()
 	{
-		if (m_Selected)
+
+		if (m_Selected && m_SelectedSurface)
 			Graphic::DrawSurface(m_SelectedSurface, m_Dimensions->x, m_Dimensions->y);
-		else
+		else if (m_Surface)
 			Graphic::DrawSurface(m_Surface, m_Dimensions->x, m_Dimensions->y);
 	}
 }

@@ -22,7 +22,7 @@ namespace Dina
 
 	void Level::Draw()
 	{
-		Set_Color(m_Map->backgroundcolor);
+		//Set_Color(m_Map->backgroundcolor);
 		Draw_All_Layers(m_Map, m_Map->ly_head);
 	}
 

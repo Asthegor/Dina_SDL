@@ -9,6 +9,7 @@ namespace Dina
 	class DINA_API Graphic
 	{
 	public:
+		enum class ShapeMode { Fill = 1, Line};
 		static void Init(int width, int height, const char* title = "Dina");
 
 
@@ -32,8 +33,9 @@ namespace Dina
 		static void DrawPolyline(double** points, double x, double y, int pointsc, SDL_Color color = {255,255,255,255});
 		static void DrawLine(int x1, int y1, int x2, int y2, SDL_Color color = { 255,255,255,255 });
 		static void DrawRectangle(Quad quad);
-		static void DrawFPoint(FPoint point, SDL_Color color = { 255,255,255,255 });
-		static void DrawPoint(Point point, SDL_Color color = { 255,255,255,255 });
+
+		static void DrawPointOnSurface(SDL_Surface* surface, Point point, SDL_Color color = { 255,255,255,255 });
+		static void DrawCircleOnSurface(SDL_Surface* surface, Point point, int radius, ShapeMode shapeMode = ShapeMode::Line, SDL_Color color = { 255,255,255,255 });
 
 		static void Clear();
 		static void Render();

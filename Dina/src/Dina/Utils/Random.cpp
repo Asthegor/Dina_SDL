@@ -9,12 +9,34 @@ namespace Dina
 
 	int Random::GetValue(int minValue, int maxValue)
 	{
-		std::uniform_int_distribution<int> uniform_dist_rows(minValue, maxValue);
+		int min, max;
+		if (minValue > maxValue)
+		{
+			min = maxValue;
+			max = minValue;
+		}
+		else
+		{
+			max = maxValue;
+			min = minValue;
+		}
+		std::uniform_int_distribution<int> uniform_dist_rows(min, max);
 		return uniform_dist_rows(GetInstance()->m_RandomEngine);
 	}
 	double Random::GetValue(double minValue, double maxValue)
 	{
-		std::uniform_real_distribution<double> uniform_dist_rows(minValue, maxValue);
+		double min, max;
+		if (minValue > maxValue)
+		{
+			min = maxValue;
+			max = minValue;
+		}
+		else
+		{
+			max = maxValue;
+			min = minValue;
+		}
+		std::uniform_real_distribution<double> uniform_dist_rows(min, max);
 		return uniform_dist_rows(GetInstance()->m_RandomEngine);
 	}
 

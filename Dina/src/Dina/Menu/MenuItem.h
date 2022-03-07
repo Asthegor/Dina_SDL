@@ -1,6 +1,7 @@
 #pragma once
 #include "Dina/Graphic/Graphic.h"
 #include "Dina/Graphic/Font.h"
+#include "Dina/Graphic/Quad.h"
 #include <functional>
 
 namespace Dina

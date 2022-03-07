@@ -27,10 +27,12 @@ namespace Dina
 	void Font::SetText(const char* text)
 	{
 		m_Text = text;
+		CreateSurface();
 	}
 	void Font::SetText(std::string text)
 	{
 		m_Text = text;
+		CreateSurface();
 	}
 
 	void Font::CreateSurface()
@@ -38,6 +40,11 @@ namespace Dina
 		if (!m_Font)
 			return;
 
+		if (m_Surface)
+		{
+			SDL_FreeSurface(m_Surface);
+			m_Surface = nullptr;
+		}
 		switch (m_FontRender)
 		{
 			case FontRender::Solid:

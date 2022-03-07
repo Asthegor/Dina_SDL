@@ -18,7 +18,7 @@ namespace Dina
 		void Run();
 
 		virtual void Load() = 0;
-		virtual void Update(double deltatime, double ticks) = 0;
+		virtual void Update(double deltatime) = 0;
 		virtual void Draw() = 0;
 
 	private:
@@ -26,6 +26,8 @@ namespace Dina
 		int m_Width = 1280;
 		int m_Height = 800;
 		bool m_Quit = false;
+
+		const double m_MaxDeltatime = 1.0 / 60.0;
 
 		SDL_Color m_BackgroundColor;
 
