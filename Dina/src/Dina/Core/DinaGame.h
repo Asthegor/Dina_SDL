@@ -1,7 +1,6 @@
 #pragma once
-#include "Core.h"
-#include <SDL.h>
 #include <string>
+#include <SDL.h>
 
 namespace Dina
 {

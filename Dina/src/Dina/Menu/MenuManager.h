@@ -35,7 +35,7 @@ namespace Dina
 		void Draw();
 
 		// Surcharge des fonctions de Event
-		virtual void OnKeyPressed(KeyCode key) override;
+		virtual void OnKeyReleased(KeyCode key) override;
 		virtual void OnMouseMove(int x, int y) override;
 		virtual void OnMousePressed(int button, int x, int y, int clicks) override;
 
@@ -55,6 +55,7 @@ namespace Dina
 		Texture* m_TitleTexture = nullptr;
 		Texture* m_TitleShadowTexture = nullptr;
 
+		bool m_KeyPressed = false;
 	};
 
 }

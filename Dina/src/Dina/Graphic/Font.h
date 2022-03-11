@@ -23,11 +23,11 @@ namespace Dina
 
 	private:
 		std::string m_Text;
-		TTF_Font* m_Font;
 		int m_Size;
 		SDL_Color m_Color;
 		SDL_Color m_BackgroundColor;
 		FontRender m_FontRender;
+		TTF_Font* m_Font;
 		SDL_Surface* m_Surface;
 	};
 

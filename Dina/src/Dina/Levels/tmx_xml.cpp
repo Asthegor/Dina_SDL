@@ -26,7 +26,7 @@
 
 static void error_handler(void *arg UNUSED, const char *msg, xmlParserSeverities severity, xmlTextReaderLocatorPtr locator) {
 	if (severity == XML_PARSER_SEVERITY_ERROR) {
-		tmx_err(E_XDATA, "xml parser: error at line %d: %s", xmlTextReaderLocatorLineNumber(locator), msg);
+		DINA_CORE_ERROR("xml parser: error at line {0}: {1}", xmlTextReaderLocatorLineNumber(locator), msg);
 	}
 }
 
@@ -45,7 +45,7 @@ static int parse_property(xmlTextReaderPtr reader, tmx_property *prop) {
 	if ((value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"name"))) { /* name */
 		prop->name = value;
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'name' attribute in the 'property' element");
+		DINA_CORE_ERROR("xml parser: missing 'name' attribute in the 'property' element");
 		return 0;
 	}
 
@@ -83,11 +83,11 @@ static int parse_property(xmlTextReaderPtr reader, tmx_property *prop) {
 		}
 	} else if (prop->type == PT_NONE || prop->type == PT_STRING) {
 		if (!(value = (char*)xmlTextReaderReadInnerXml(reader))) {
-			tmx_err(E_MISSEL, "xml parser: missing 'value' attribute or inner XML for the 'property' element");
+			DINA_CORE_ERROR("xml parser: missing 'value' attribute or inner XML for the 'property' element");
 		}
 		prop->value.string = value;
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'value' attribute in the 'property' element");
+		DINA_CORE_ERROR("xml parser: missing 'value' attribute in the 'property' element");
 		return 0;
 	}
 	return 1;
@@ -130,7 +130,7 @@ static int parse_points(xmlTextReaderPtr reader, tmx_shape *shape) {
 	int i;
 
 	if (!(value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"points"))) { /* points */
-		tmx_err(E_MISSEL, "xml parser: missing 'points' attribute in the 'object' element");
+		DINA_CORE_ERROR("xml parser: missing 'points' attribute in the 'object' element");
 		return 0;
 	}
 
@@ -156,7 +156,7 @@ static int parse_points(xmlTextReaderPtr reader, tmx_shape *shape) {
 	v = value;
 	for (i=0; i<shape->points_len; i++) {
 		if (sscanf_s(v, "%lf,%lf", shape->points[i], shape->points[i]+1) != 2) {
-			tmx_err(E_XDATA, "xml parser: corrupted point list");
+			DINA_CORE_ERROR("xml parser: corrupted point list");
 			return 0;
 		}
 		v = 1 + strchr(v, ' ');
@@ -248,7 +248,7 @@ static int parse_object(xmlTextReaderPtr reader, tmx_object *obj, int is_on_map,
 		obj->id = atoi(value);
 		tmx_free_func(value);
 	} else if (is_on_map) {
-		tmx_err(E_MISSEL, "xml parser: missing 'id' attribute in the 'object' element");
+		DINA_CORE_ERROR("xml parser: missing 'id' attribute in the 'object' element");
 		return 0;
 	}
 
@@ -256,7 +256,7 @@ static int parse_object(xmlTextReaderPtr reader, tmx_object *obj, int is_on_map,
 		obj->x = atof(value);
 		tmx_free_func(value);
 	} else if (is_on_map) {
-		tmx_err(E_MISSEL, "xml parser: missing 'x' attribute in the 'object' element");
+		DINA_CORE_ERROR("xml parser: missing 'x' attribute in the 'object' element");
 		return 0;
 	}
 
@@ -264,7 +264,7 @@ static int parse_object(xmlTextReaderPtr reader, tmx_object *obj, int is_on_map,
 		obj->y = atof(value);
 		tmx_free_func(value);
 	} else if (is_on_map) {
-		tmx_err(E_MISSEL, "xml parser: missing 'y' attribute in the 'object' element");
+		DINA_CORE_ERROR("xml parser: missing 'y' attribute in the 'object' element");
 		return 0;
 	}
 	
@@ -279,13 +279,12 @@ static int parse_object(xmlTextReaderPtr reader, tmx_object *obj, int is_on_map,
 			ab_path = mk_absolute_path(filename, value);
 			if (ab_path.empty()) return 0;
 			if (!(sub_reader = xmlReaderForFile(ab_path.c_str(), NULL, 0))) { /* opens */
-				tmx_err(E_XDATA, "xml parser: cannot open object template file '%s'", ab_path.c_str());
+				DINA_CORE_ERROR("xml parser: cannot open object template file '{0}'", ab_path.c_str());
 				//tmx_free_func(ab_path);
 				tmx_free_func(value);
 				return 0;
 			}
 			obj->template_ref = parse_template_document(sub_reader, rc_mgr, ab_path.c_str()); /* and parses the template file */
-			//tmx_free_func(ab_path);
 			if (!(obj->template_ref))
 			{
 				tmx_free_func(value);
@@ -383,12 +382,12 @@ static int parse_data(xmlTextReaderPtr reader, uint32_t **gidsadr, size_t gidsco
 	enum enccmp_t data_type;
 
 	if (!(value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"encoding"))) { /* encoding */
-		tmx_err(E_MISSEL, "xml parser: missing 'encoding' attribute in the 'data' element");
+		DINA_CORE_ERROR("xml parser: missing 'encoding' attribute in the 'data' element");
 		return 0;
 	}
 
 	if (!(inner_xml = (char*)xmlTextReaderReadInnerXml(reader))) {
-		tmx_err(E_XDATA, "xml parser: missing content in the 'data' element");
+		DINA_CORE_ERROR("xml parser: missing content in the 'data' element");
 		tmx_free_func(value);
 		return 0;
 	}
@@ -403,18 +402,18 @@ static int parse_data(xmlTextReaderPtr reader, uint32_t **gidsadr, size_t gidsco
 		} else if (value && !(strcmp(value, "zlib") && strcmp(value, "gzip"))) {
 			data_type = B64Z;
 		} else {
-			tmx_err(E_ENCCMP, "xml parser: unsupported data compression: '%s'", value); /* unsupported compression */
+			DINA_CORE_ERROR("xml parser: unsupported data compression: '{0}'", value); /* unsupported compression */
 			goto cleanup;
 		}
 		if (!data_decode(str_trim(inner_xml), data_type, gidscount, gidsadr)) goto cleanup;
 
 	} else if (!strcmp(value, "xml")) {
-		tmx_err(E_ENCCMP, "xml parser: unimplemented data encoding: XML");
+		DINA_CORE_ERROR("xml parser: unimplemented data encoding: XML");
 		goto cleanup;
 	} else if (!strcmp(value, "csv")) {
 		if (!data_decode(str_trim(inner_xml), CSV, gidscount, gidsadr)) goto cleanup;
 	} else {
-		tmx_err(E_ENCCMP, "xml parser: unknown data encoding: %s", value);
+		DINA_CORE_ERROR("xml parser: unknown data encoding: {0}", value);
 		goto cleanup;
 	}
 	tmx_free_func(value);
@@ -437,11 +436,11 @@ static int parse_image(xmlTextReaderPtr reader, tmx_image **img_adr, short stric
 	if ((value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"source"))) { /* source */
 		res->source = value;
 		if (!(load_image(&(res->resource_image), filename, value))) {
-			tmx_err(E_UNKN, "xml parser: an error occured in the delegated image loading function");
+			DINA_CORE_ERROR("xml parser: an error occured in the delegated image loading function");
 			return 0;
 		}
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'source' attribute in the 'image' element");
+		DINA_CORE_ERROR("xml parser: missing 'source' attribute in the 'image' element");
 		return 0;
 	}
 
@@ -449,7 +448,7 @@ static int parse_image(xmlTextReaderPtr reader, tmx_image **img_adr, short stric
 		res->height = atoi(value);
 		tmx_free_func(value);
 	} else if (strict) {
-		tmx_err(E_MISSEL, "xml parser: missing 'height' attribute in the 'image' element");
+		DINA_CORE_ERROR("xml parser: missing 'height' attribute in the 'image' element");
 		return 0;
 	}
 
@@ -457,7 +456,7 @@ static int parse_image(xmlTextReaderPtr reader, tmx_image **img_adr, short stric
 		res->width = atoi(value);
 		tmx_free_func(value);
 	} else if (strict) {
-		tmx_err(E_MISSEL, "xml parser: missing 'width' attribute in the 'image' element");
+		DINA_CORE_ERROR("xml parser: missing 'width' attribute in the 'image' element");
 		return 0;
 	}
 
@@ -493,14 +492,14 @@ static int parse_layer(xmlTextReaderPtr reader, tmx_layer **layer_headadr, int m
 		res->id = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'id' attribute in the 'layer' element");
+		DINA_CORE_ERROR("xml parser: missing 'id' attribute in the 'layer' element");
 		return 0;
 	}
 
 	if ((value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"name"))) { /* name */
 		res->name = value;
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'name' attribute in the 'layer' element");
+		DINA_CORE_ERROR("xml parser: missing 'name' attribute in the 'layer' element");
 		return 0;
 	}
 
@@ -595,7 +594,7 @@ static int parse_tileoffset(xmlTextReaderPtr reader, int *x, int *y) {
 		*x = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'x' attribute in the 'tileoffset' element");
+		DINA_CORE_ERROR("xml parser: missing 'x' attribute in the 'tileoffset' element");
 		return 0;
 	}
 
@@ -603,7 +602,7 @@ static int parse_tileoffset(xmlTextReaderPtr reader, int *x, int *y) {
 		*y = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'y' attribute in the 'tileoffset' element");
+		DINA_CORE_ERROR("xml parser: missing 'y' attribute in the 'tileoffset' element");
 		return 0;
 	}
 
@@ -621,7 +620,7 @@ static tmx_anim_frame* parse_animation(xmlTextReaderPtr reader, int frame_count,
 
 	value = (char*)xmlTextReaderConstName(reader);
 	if (strcmp(value, "frame")) {
-		tmx_err(E_XDATA, "xml parser: invalid element '%s' within an 'animation'", value);
+		DINA_CORE_ERROR("xml parser: invalid element '{0}' within an 'animation'", value);
 		return 0;
 	}
 
@@ -630,7 +629,7 @@ static tmx_anim_frame* parse_animation(xmlTextReaderPtr reader, int frame_count,
 		tmx_free_func(value);
 	}
 	else {
-		tmx_err(E_MISSEL, "xml parser: missing 'tileid' attribute in the 'frame' element");
+		DINA_CORE_ERROR("xml parser: missing 'tileid' attribute in the 'frame' element");
 		return 0;
 	}
 
@@ -639,7 +638,7 @@ static tmx_anim_frame* parse_animation(xmlTextReaderPtr reader, int frame_count,
 		tmx_free_func(value);
 	}
 	else {
-		tmx_err(E_MISSEL, "xml parser: missing 'duration' attribute in the 'frame' element");
+		DINA_CORE_ERROR("xml parser: missing 'duration' attribute in the 'frame' element");
 		return 0;
 	}
 
@@ -655,7 +654,7 @@ static tmx_anim_frame* parse_animation(xmlTextReaderPtr reader, int frame_count,
 	if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_END_ELEMENT && xmlTextReaderDepth(reader) < curr_depth) {
 		res = (tmx_anim_frame*)tmx_alloc_func(NULL, (frame_count+1) * sizeof(tmx_anim_frame));
 		if (res == NULL) {
-			tmx_err(E_ALLOC, "xml parser: failed to alloc %d animation frames", frame_count+1);
+			DINA_CORE_ERROR("xml parser: failed to alloc {0} animation frames", frame_count+1);
 			return NULL;
 		}
 		res[frame_count] = frame;
@@ -671,7 +670,7 @@ static tmx_anim_frame* parse_animation(xmlTextReaderPtr reader, int frame_count,
 		return res;
 	}
 
-	tmx_err(E_XDATA, "xml parser: unexpected element '%s' within 'animation'", (char*)xmlTextReaderConstName(reader));
+	DINA_CORE_ERROR("xml parser: unexpected element '{0}' within 'animation'", (char*)xmlTextReaderConstName(reader));
 	return NULL;
 }
 
@@ -712,7 +711,7 @@ static int parse_tile(xmlTextReaderPtr reader, tmx_tileset *tileset, tmx_resourc
 		tmx_free_func(value);
 	}
 	else {
-		tmx_err(E_MISSEL, "xml parser: missing 'id' attribute in the 'tile' element");
+		DINA_CORE_ERROR("xml parser: missing 'id' attribute in the 'tile' element");
 		return 0;
 	}
 
@@ -786,7 +785,7 @@ static int parse_tileset(xmlTextReaderPtr reader, tmx_tileset *ts_addr, tmx_reso
 	if ((value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"name"))) { /* name */
 		ts_addr->name = value;
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'name' attribute in the 'tileset' element");
+		DINA_CORE_ERROR("xml parser: missing 'name' attribute in the 'tileset' element");
 		return 0;
 	}
 
@@ -794,7 +793,7 @@ static int parse_tileset(xmlTextReaderPtr reader, tmx_tileset *ts_addr, tmx_reso
 		ts_addr->tilecount = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'tilecount' attribute in the 'tileset' element");
+		DINA_CORE_ERROR("xml parser: missing 'tilecount' attribute in the 'tileset' element");
 		return 0;
 	}
 
@@ -802,7 +801,7 @@ static int parse_tileset(xmlTextReaderPtr reader, tmx_tileset *ts_addr, tmx_reso
 		ts_addr->tile_width = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'tilewidth' attribute in the 'tileset' element");
+		DINA_CORE_ERROR("xml parser: missing 'tilewidth' attribute in the 'tileset' element");
 		return 0;
 	}
 
@@ -810,7 +809,7 @@ static int parse_tileset(xmlTextReaderPtr reader, tmx_tileset *ts_addr, tmx_reso
 		ts_addr->tile_height = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'tileheight' attribute in the 'tileset' element");
+		DINA_CORE_ERROR("xml parser: missing 'tileheight' attribute in the 'tileset' element");
 		return 0;
 	}
 
@@ -877,7 +876,7 @@ static int parse_tileset_list(xmlTextReaderPtr reader, tmx_tileset_list **ts_hea
 		res_list->firstgid = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'firstgid' attribute in the 'tileset' element");
+		DINA_CORE_ERROR("xml parser: missing 'firstgid' attribute in the 'tileset' element");
 		return 0;
 	}
 
@@ -907,7 +906,7 @@ static int parse_tileset_list(xmlTextReaderPtr reader, tmx_tileset_list **ts_hea
 		ab_path = mk_absolute_path(filename, value);
 		if (ab_path.empty()) return 0;
 		if (!(sub_reader = xmlReaderForFile(ab_path.c_str(), NULL, 0)) || !check_reader(sub_reader)) { /* opens */
-			tmx_err(E_XDATA, "xml parser: cannot open extern tileset '%s'", ab_path.c_str());
+			DINA_CORE_ERROR("xml parser: cannot open extern tileset '{0}'", ab_path.c_str());
 			//tmx_free_func(ab_path);
 			return 0;
 		}
@@ -964,7 +963,7 @@ static int parse_map(xmlTextReaderPtr reader, tmx_map *map, tmx_resource_manager
 		flag = atoi(value);
 		tmx_free_func(value);
 		if (flag == 1) {
-			tmx_err(E_XDATA, "xml parser: chunked layer data is not supported, edit this map to remove the infinite flag");
+			DINA_CORE_ERROR("xml parser: chunked layer data is not supported, edit this map to remove the infinite flag");
 			return 0;
 		}
 	}
@@ -972,32 +971,32 @@ static int parse_map(xmlTextReaderPtr reader, tmx_map *map, tmx_resource_manager
 	/* parses each attribute */
 	if ((value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"orientation"))) { /* orientation */
 		if (map->orient = parse_orient(value), map->orient == O_NONE) {
-			tmx_err(E_XDATA, "xml parser: unsupported 'orientation' '%s'", value);
+			DINA_CORE_ERROR("xml parser: unsupported 'orientation' '{0}'", value);
 			return 0;
 		}
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'orientation' attribute in the 'map' element");
+		DINA_CORE_ERROR("xml parser: missing 'orientation' attribute in the 'map' element");
 		return 0;
 	}
 
 	value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"staggerindex"); /* staggerindex */
 	if (value != NULL && (map->stagger_index = parse_stagger_index(value), map->stagger_index == SI_NONE)) {
-		tmx_err(E_XDATA, "xml parser: unsupported 'staggerindex' '%s'", value);
+		DINA_CORE_ERROR("xml parser: unsupported 'staggerindex' '{0}'", value);
 		return 0;
 	}
 	tmx_free_func(value);
 
 	value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"staggeraxis"); /* staggeraxis */
 	if (map->stagger_axis = parse_stagger_axis(value), map->stagger_axis == SA_NONE) {
-		tmx_err(E_XDATA, "xml parser: unsupported 'staggeraxis' '%s'", value);
+		DINA_CORE_ERROR("xml parser: unsupported 'staggeraxis' '{0}'", value);
 		return 0;
 	}
 	tmx_free_func(value);
 
 	value = (char*)xmlTextReaderGetAttribute(reader, (xmlChar*)"renderorder"); /* renderorder */
 	if (map->renderorder = parse_renderorder(value), map->renderorder == R_NONE) {
-		tmx_err(E_XDATA, "xml parser: unsupported 'renderorder' '%s'", value);
+		DINA_CORE_ERROR("xml parser: unsupported 'renderorder' '{0}'", value);
 		return 0;
 	}
 	tmx_free_func(value);
@@ -1006,7 +1005,7 @@ static int parse_map(xmlTextReaderPtr reader, tmx_map *map, tmx_resource_manager
 		map->height = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'height' attribute in the 'map' element");
+		DINA_CORE_ERROR("xml parser: missing 'height' attribute in the 'map' element");
 		return 0;
 	}
 
@@ -1014,7 +1013,7 @@ static int parse_map(xmlTextReaderPtr reader, tmx_map *map, tmx_resource_manager
 		map->width = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'width' attribute in the 'map' element");
+		DINA_CORE_ERROR("xml parser: missing 'width' attribute in the 'map' element");
 		return 0;
 	}
 
@@ -1022,7 +1021,7 @@ static int parse_map(xmlTextReaderPtr reader, tmx_map *map, tmx_resource_manager
 		map->tile_height = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'tileheight' attribute in the 'map' element");
+		DINA_CORE_ERROR("xml parser: missing 'tileheight' attribute in the 'map' element");
 		return 0;
 	}
 
@@ -1030,7 +1029,7 @@ static int parse_map(xmlTextReaderPtr reader, tmx_map *map, tmx_resource_manager
 		map->tile_width = atoi(value);
 		tmx_free_func(value);
 	} else {
-		tmx_err(E_MISSEL, "xml parser: missing 'tilewidth' attribute in the 'map' element");
+		DINA_CORE_ERROR("xml parser: missing 'tilewidth' attribute in the 'map' element");
 		return 0;
 	}
 
@@ -1079,7 +1078,7 @@ static tmx_map* parse_map_document(xmlTextReaderPtr reader, tmx_resource_manager
 
 		name = (char*) xmlTextReaderConstName(reader);
 		if (strcmp(name, "map")) {
-			tmx_err(E_XDATA, "xml parser: root of map document is not a 'map' element");
+			DINA_CORE_ERROR("xml parser: root of map document is not a 'map' element");
 		}
 		else if ((res = alloc_map())) {
 			if (!parse_map(reader, res, rc_mgr, filename)) {
@@ -1101,7 +1100,7 @@ static tmx_tileset* parse_tileset_document(xmlTextReaderPtr reader, const char *
 	if (check_reader(reader)) {
 		name = (char*) xmlTextReaderConstName(reader);
 		if (strcmp(name, "tileset")) {
-			tmx_err(E_XDATA, "xml parser: root of tileset document is not a 'tileset' element");
+			DINA_CORE_ERROR("xml parser: root of tileset document is not a 'tileset' element");
 			return NULL;
 		}
 		else if ((res = alloc_tileset())) {
@@ -1122,7 +1121,7 @@ static tmx_template* parse_template_document(xmlTextReaderPtr reader, tmx_resour
 	if (check_reader(reader)) {
 		name = (char*) xmlTextReaderConstName(reader);
 		if (strcmp(name, "template")) {
-			tmx_err(E_XDATA, "xml parser: root of template document is not a 'template' element");
+			DINA_CORE_ERROR("xml parser: root of template document is not a 'template' element");
 			return NULL;
 		}
 		else if ((res = alloc_template())) {
@@ -1149,7 +1148,7 @@ tmx_map *parse_xml(tmx_resource_manager *rc_mgr, const char *filename) {
 	if ((reader = xmlReaderForFile(filename, NULL, 0))) {
 		res = parse_map_document(reader, rc_mgr, filename);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to open %s", filename);
+		DINA_CORE_ERROR("xml parser: unable to open {0}", filename);
 	}
 
 	return res;
@@ -1164,7 +1163,7 @@ tmx_map* parse_xml_buffer(tmx_resource_manager *rc_mgr, const char *buffer, int 
 	if ((reader = xmlReaderForMemory(buffer, len, NULL, NULL, 0))) {
 		res = parse_map_document(reader, rc_mgr, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to create parser for buffer");
+		DINA_CORE_ERROR("xml parser: unable to create parser for buffer");
 	}
 
 	return res;
@@ -1179,7 +1178,7 @@ tmx_map* parse_xml_fd(tmx_resource_manager *rc_mgr, int fd) {
 	if ((reader = xmlReaderForFd(fd, NULL, NULL, 0))) {
 		res = parse_map_document(reader, rc_mgr, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable create parser for file descriptor");
+		DINA_CORE_ERROR("xml parser: unable create parser for file descriptor");
 	}
 
 	return res;
@@ -1194,7 +1193,7 @@ tmx_map* parse_xml_callback(tmx_resource_manager *rc_mgr, tmx_read_functor callb
 	if ((reader = xmlReaderForIO((xmlInputReadCallback)callback, NULL, userdata, NULL, NULL, 0))) {
 		res = parse_map_document(reader, rc_mgr, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to create parser for input callback");
+		DINA_CORE_ERROR("xml parser: unable to create parser for input callback");
 	}
 
 	return res;
@@ -1213,7 +1212,7 @@ tmx_tileset* parse_tsx_xml(const char *filename) {
 	if ((reader = xmlReaderForFile(filename, NULL, 0))) {
 		res = parse_tileset_document(reader, filename);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to open %s", filename);
+		DINA_CORE_ERROR("xml parser: unable to open {0}", filename);
 	}
 
 	return res;
@@ -1228,7 +1227,7 @@ tmx_tileset* parse_tsx_xml_buffer(const char *buffer, int len) {
 	if ((reader = xmlReaderForMemory(buffer, len, NULL, NULL, 0))) {
 		res = parse_tileset_document(reader, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to create parser for buffer");
+		DINA_CORE_ERROR("xml parser: unable to create parser for buffer");
 	}
 
 	return res;
@@ -1243,7 +1242,7 @@ tmx_tileset* parse_tsx_xml_fd(int fd) {
 	if ((reader = xmlReaderForFd(fd, NULL, NULL, 0))) {
 		res = parse_tileset_document(reader, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable create parser for file descriptor");
+		DINA_CORE_ERROR("xml parser: unable create parser for file descriptor");
 	}
 
 	return res;
@@ -1258,7 +1257,7 @@ tmx_tileset* parse_tsx_xml_callback(tmx_read_functor callback, void *userdata) {
 	if ((reader = xmlReaderForIO((xmlInputReadCallback)callback, NULL, userdata, NULL, NULL, 0))) {
 		res = parse_tileset_document(reader, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to create parser for input callback");
+		DINA_CORE_ERROR("xml parser: unable to create parser for input callback");
 	}
 
 	return res;
@@ -1277,7 +1276,7 @@ tmx_template* parse_tx_xml(tmx_resource_manager *rc_mgr, const char *filename) {
 	if ((reader = xmlReaderForFile(filename, NULL, 0))) {
 		res = parse_template_document(reader, rc_mgr, filename);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to open %s", filename);
+		DINA_CORE_ERROR("xml parser: unable to open {0}", filename);
 	}
 
 	return res;
@@ -1292,7 +1291,7 @@ tmx_template* parse_tx_xml_buffer(tmx_resource_manager *rc_mgr, const char *buff
 	if ((reader = xmlReaderForMemory(buffer, len, NULL, NULL, 0))) {
 		res = parse_template_document(reader, rc_mgr, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to create parser for buffer");
+		DINA_CORE_ERROR("xml parser: unable to create parser for buffer");
 	}
 
 	return res;
@@ -1307,7 +1306,7 @@ tmx_template* parse_tx_xml_fd(tmx_resource_manager *rc_mgr, int fd) {
 	if ((reader = xmlReaderForFd(fd, NULL, NULL, 0))) {
 		res = parse_template_document(reader, rc_mgr, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable create parser for file descriptor");
+		DINA_CORE_ERROR("xml parser: unable create parser for file descriptor");
 	}
 
 	return res;
@@ -1322,7 +1321,7 @@ tmx_template* parse_tx_xml_callback(tmx_resource_manager *rc_mgr, tmx_read_funct
 	if ((reader = xmlReaderForIO((xmlInputReadCallback)callback, NULL, userdata, NULL, NULL, 0))) {
 		res = parse_template_document(reader, rc_mgr, NULL);
 	} else {
-		tmx_err(E_UNKN, "xml parser: unable to create parser for input callback");
+		DINA_CORE_ERROR("xml parser: unable to create parser for input callback");
 	}
 
 	return res;

@@ -52,7 +52,6 @@ namespace Dina
 }
 // File MenuManager.h
 #include "Dina/Menu/MenuItem.h"
-#include <vector>
 namespace Dina
 {
 	template class DINA_API std::_Vector_val<std::_Simple_types<Dina::MenuItem*>>;
@@ -87,5 +86,13 @@ namespace Dina
 	template class DINA_API std::_Vector_val<std::_Simple_types<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>>>;
 	template class DINA_API std::_Compressed_pair<std::allocator<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>>, std::_Vector_val<std::_Simple_types<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>>>, true>;
 	template class DINA_API std::vector<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>, std::allocator<std::vector<Dina::FPoint, std::allocator<Dina::FPoint>>>>;
+}
+// File Level.h
+#include "Dina/Levels/LevelSprite.h"
+namespace Dina
+{
+	template class DINA_API std::_Vector_val<std::_Simple_types<Dina::LevelSprite>>;
+	template class DINA_API std::_Compressed_pair<std::allocator<Dina::LevelSprite>, std::_Vector_val<std::_Simple_types<Dina::LevelSprite>>, true>;
+	template class DINA_API std::vector<Dina::LevelSprite, std::allocator<Dina::LevelSprite>>;
 }
 /*************************************************************************************************************/

@@ -24,9 +24,6 @@
     <ClInclude Include="src\Dina\Core\Core.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\Dina\Core\EntryPoint.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="src\Dina\Core\Log.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -128,6 +125,12 @@
     </ClInclude>
     <ClInclude Include="src\Dina\Utils\noise1234.h">
       <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dina\Levels\LevelSprite.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dina\Core\EntryPoint.h">
+      <Filter>Fichiers sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

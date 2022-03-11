@@ -52,8 +52,8 @@ namespace Dina
 		SDL_Texture* m_Texture;
 		Quad* m_Dimensions;
 		Quad* m_OriginalDimensions;
-		double m_Angle = 0.0;
 		Point* m_Origin;
+		double m_Angle = 0.0;
 		SDL_RendererFlip m_Flip = SDL_FLIP_NONE;
 	};
 

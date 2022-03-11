@@ -27,7 +27,7 @@ namespace Dina
 		static SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
 
 		//Drawing
-		static void DrawTexture(Texture* texture);
+		static void DrawTexture(Texture* texture, SDL_Color color = {255,255,255,255});
 		static void DrawSurface(SDL_Surface* surface, int x = 0, int y = 0);
 		static void DrawSprite(Sprite* sprite);
 		static void DrawPolyline(double** points, double x, double y, int pointsc, SDL_Color color = {255,255,255,255});

@@ -1,9 +1,6 @@
 ﻿#include "dinapch.h"
 
 #include "Graphic.h"
-#include "Texture.h"
-#include <SDL_image.h>
-#include <SDL.h>
 
 namespace Dina
 {
@@ -97,6 +94,7 @@ namespace Dina
 			DINA_CORE_ERROR("Unable to load image \"{0}\". Error: {1}", filePath, SDL_GetError());
 			return nullptr;
 		}
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
 		return texture;
 	}
@@ -106,13 +104,18 @@ namespace Dina
 		return reinterpret_cast<void*>(LoadTexture(filePath));
 	}
 
-	void Graphic::DrawTexture(Texture* texture)
+	void Graphic::DrawTexture(Texture* texture, SDL_Color color)
 	{
 		if (texture)
 		{
 			Dina::Quad* quad = texture->GetDimensions();
 			SDL_Rect rect = quad->ToSDLRect();
-			int success = SDL_RenderCopyEx(GetInstance()->m_Renderer, texture->GetTexture(), nullptr, &rect, texture->GetAngle(), (SDL_Point*) texture->GetOrigin(), texture->GetFlip());
+			SDL_Texture* sdlTexture = texture->GetTexture();
+			int success = SDL_SetTextureColorMod(sdlTexture, color.r, color.g, color.b);
+			DINA_CORE_ASSERT((success == 0), "Unable to color the given texture - Error: {0}", SDL_GetError());
+			success = SDL_SetTextureAlphaMod(sdlTexture, color.a);
+			DINA_CORE_ASSERT((success == 0), "Unable to alpha color the given texture - Error: {0}", SDL_GetError());
+			success = SDL_RenderCopyEx(GetInstance()->m_Renderer, sdlTexture, nullptr, &rect, texture->GetAngle(), (SDL_Point*) texture->GetOrigin(), texture->GetFlip());
 			DINA_CORE_ASSERT((success == 0), "Unable to draw the given texture - Error: {0}", SDL_GetError());
 		}
 	}

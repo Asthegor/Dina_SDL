@@ -44,6 +44,7 @@ namespace Dina
 
 	void DinaGame::Run()
 	{
+
 		Graphic::Init(m_Width, m_Height, m_Title.c_str());
 		DINA_CORE_TRACE("Window and renderer successfully created.");
 
@@ -58,23 +59,26 @@ namespace Dina
 		Load();
 
 		double deltatime = 0.0;
+		double maxDeltatime = 1.0 / 60.0;
 		// Boucle de jeu
 		while (!m_Quit)
 		{
 
 			deltatime = GameTime::GetElapsedTime();
-			//DINA_CORE_TRACE("Traitement des événements.");
 
 			m_Quit = Dina::EventManager::Execute();
 
 			Graphic::SetBackgroundColor(m_BackgroundColor);
 
-			//DINA_CORE_TRACE("Mise à jour des données (update).");
+			if (deltatime < maxDeltatime)
+			{
+				double delay = maxDeltatime - deltatime;
+				deltatime = std::max(deltatime, maxDeltatime);
+				SDL_Delay(static_cast<Uint32>(delay * 1000));
+			}
 			Update(deltatime);
 
 			Graphic::Clear();
-
-			//DINA_CORE_TRACE("Affichage du rendu (draw).");
 			Draw();
 			Graphic::Render();
 		}
@@ -83,6 +87,7 @@ namespace Dina
 
 	void DinaGame::Init()
 	{
+		SDL_SetMainReady();
 		int success = 0;
 
 		success = SDL_Init(SDL_INIT_EVERYTHING);

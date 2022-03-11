@@ -79,8 +79,8 @@ namespace Dina
 
 	Font::~Font()
 	{
+		SDL_FreeSurface(m_Surface);
 		TTF_CloseFont(m_Font);
-		m_Font = nullptr;
 	}
 
 }

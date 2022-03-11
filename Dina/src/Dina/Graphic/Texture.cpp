@@ -1,13 +1,11 @@
 #include "dinapch.h"
 #include "Texture.h"
-#include "Graphic.h"
-#include <SDL.h>
 
 namespace Dina
 {
 	Texture::Texture() :
-		m_Texture(nullptr), m_OriginalDimensions(new Dina::Quad),
-		m_Dimensions(new Dina::Quad), m_Origin(new Point)
+		m_Texture(nullptr), m_OriginalDimensions(new Quad),
+		m_Dimensions(new Quad), m_Origin(new Point)
 	{
 		DINA_CORE_ASSERT(m_Texture != nullptr, "The texture must not be null");
 	}
@@ -17,9 +15,9 @@ namespace Dina
 	{
 		DINA_CORE_ASSERT(m_Texture,"The texture must not be null");
 
-		m_OriginalDimensions = new Dina::Quad{ x,y };
+		m_OriginalDimensions = new Quad{ x,y };
 		SDL_QueryTexture(m_Texture, nullptr, nullptr, &m_OriginalDimensions->width, &m_OriginalDimensions->height);
-		m_Dimensions = new Dina::Quad(*m_OriginalDimensions);
+		m_Dimensions = new Quad(*m_OriginalDimensions);
 	}
 	Texture::Texture(const char* textureName, int x, int y) :
 		Texture { Graphic::LoadTexture(textureName), x, y }
@@ -31,7 +29,7 @@ namespace Dina
 		SetAngle(texture.GetAngle());
 		SetFlip(texture.GetFlip());
 		SetOrigin(texture.GetOrigin());
-		m_OriginalDimensions = new Dina::Quad(*(texture.GetDimensions()));
+		m_OriginalDimensions = new Quad(*(texture.GetDimensions()));
 		SDL_QueryTexture((SDL_Texture*)this, nullptr, nullptr, &m_OriginalDimensions->width, &m_OriginalDimensions->height);
 	}
 
@@ -40,7 +38,7 @@ namespace Dina
 		return m_Texture;
 	}
 
-	Dina::Quad* Texture::GetDimensions() const
+	Quad* Texture::GetDimensions() const
 	{
 		return m_Dimensions;
 	}
@@ -108,6 +106,7 @@ namespace Dina
 	{
 		delete m_Dimensions;
 		delete m_OriginalDimensions;
+		delete m_Origin;
 
 		SDL_DestroyTexture(m_Texture);
 	}

@@ -1,11 +1,12 @@
 #pragma once
 #include <locale>
+#include <Dina.h>
 
 extern Dina::DinaGame* Dina::CreateGame();
 
-int main(int argc, char* argv[])
+inline int main(int argc, char* argv[])
 {
-	std::locale::global(std::locale{ "" });
+	std::locale::global(std::locale { "" });
 
 	Dina::Log::Init();
 	DINA_CORE_INFO("SpdLog initialized successfully.");

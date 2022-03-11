@@ -125,7 +125,7 @@ namespace Dina
 
 
 	// Keyboard events
-	void MenuManager::OnKeyPressed(KeyCode key)
+	void MenuManager::OnKeyReleased(KeyCode key)
 	{
 		if (key == KeyCode::Down)
 		{

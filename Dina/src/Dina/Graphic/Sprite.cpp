@@ -1,6 +1,5 @@
 #include "dinapch.h"
 #include "Sprite.h"
-#include "Texture.h"
 
 namespace Dina
 {

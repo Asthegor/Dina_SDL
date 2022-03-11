@@ -35,8 +35,8 @@ namespace Dina
 		bool m_Selected = false;
 		std::string m_Text;
 		
-		SDL_Surface* m_Surface = nullptr;
-		SDL_Surface* m_SelectedSurface = nullptr;
+		Font* m_Font = nullptr;
+		Font* m_SelectedFont = nullptr;
 		Quad* m_Dimensions = nullptr;
 	};
 

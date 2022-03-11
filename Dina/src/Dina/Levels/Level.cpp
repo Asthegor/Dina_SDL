@@ -3,10 +3,9 @@
 
 namespace Dina
 {
-	Level::Level(const char* fileName)
+	Level::Level()
 	{
-		m_Map = tmx_load(fileName);
-		DINA_CORE_ASSERT(m_Map, "Unable to load '{0}' map", fileName);
+
 	}
 
 	Level::~Level()
@@ -14,18 +13,212 @@ namespace Dina
 		tmx_map_free(m_Map);
 	}
 
-	void Level::Load()
-	{}
+	void Level::Load(const char* fileName)
+	{
+		m_Map = tmx_load(fileName);
+		DINA_CORE_ASSERT(m_Map, "Unable to load '{0}' map", fileName);
+
+		// TODO:
+		// 1) Charger les tilsets et les stocker
+		// ==> Déjà fait à l'aide de la fonction LoadVoidTexture définie dans set_alloc_functions de tmx_mem.cpp
+		// Les tilesets sont stockés dans m_Map->ts_head(*)->tileset(*)->image->resource_image
+		// 
+		// 2) Créer un objet Sprite pour chacune des cases de ma grille (déjà existant)
+		//	  et les stocker dans un tableau (std::vector)
+		//
+		Create_Sprites(m_Map->ly_head);
+
+		DINA_CORE_TRACE("--------------------------------------------------------------");
+		DINA_CORE_TRACE("--------------------------------------------------------------");
+		DINA_CORE_TRACE("--------------------------------------------------------------");
+	}
+
+	void Level::Create_Sprites(tmx_layer* layer)
+	{
+		while (layer)
+		{
+			if (layer->visible)
+			{
+				switch (layer->type)
+				{
+					case L_GROUP:
+						Create_Sprites(layer->content.group_head);
+						break;
+					case L_OBJGR:
+						Create_Objects(layer->content.objgr);
+						break;
+					case L_IMAGE:
+						Create_ImageSprite(layer->content.image);
+						//Draw_Image_Layer(layer->content.image);
+						break;
+					case L_LAYER:
+						Create_LayerSprites(layer);
+						break;
+				}
+			}
+			layer = layer->next;
+		}
+
+	}
+	void Level::Create_ImageSprite(tmx_image* image)
+	{
+		if (image)
+		{
+			Texture* texture = new Texture { static_cast<SDL_Texture*>(image->resource_image) };
+			if (texture)
+			{
+				LevelSprite ls = { LevelSpriteType::TEXTURE, texture };
+				m_LevelSprites.emplace_back(ls);
+			}
+		}
+	}
+	void Level::Create_LayerSprites(tmx_layer* layer)
+	{
+		unsigned long i, j;
+		unsigned int gid, x, y, w, h, flags;
+		float op;
+		tmx_tileset* ts;
+		tmx_image* im;
+		void* image;
+		op = static_cast<float>(layer->opacity);
+		for (i = 0; i < m_Map->height; i++)
+		{
+			for (j = 0; j < m_Map->width; j++)
+			{
+				gid = (layer->content.gids[(i * m_Map->width) + j]) & TMX_FLIP_BITS_REMOVAL;
+				if (m_Map->tiles[gid] != NULL)
+				{
+					ts = m_Map->tiles[gid]->tileset;
+					im = m_Map->tiles[gid]->image;
+					x = m_Map->tiles[gid]->ul_x;
+					y = m_Map->tiles[gid]->ul_y;
+					w = ts->tile_width;
+					h = ts->tile_height;
+
+					image = im ? im->resource_image : ts->image->resource_image;
+
+					flags = (layer->content.gids[(i * m_Map->width) + j]) & ~TMX_FLIP_BITS_REMOVAL;
+					Sprite* sprite = Create_Sprite(image, x, y, w, h, j * ts->tile_width, i * ts->tile_height, op, flags);
+
+					LevelSprite ls = { LevelSpriteType::SPRITE, sprite };
+					m_LevelSprites.emplace_back(ls);
+				}
+			}
+		}
+	}
+
+	void Level::Create_Objects(tmx_object_group* objgr)
+	{
+		tmx_object* head = objgr->head;
+		while (head)
+		{
+			if (head->visible)
+			{
+				switch (head->obj_type)
+				{
+					case OT_ELLIPSE:
+					case OT_POINT:
+						break;
+					case OT_POLYGON:
+						//Draw_Polygon(head->content.shape->points, head->x, head->y, head->content.shape->points_len);
+						break;
+					case OT_POLYLINE:
+						//Draw_Polyline(head->content.shape->points, head->x, head->y, head->content.shape->points_len);
+						break;
+					case OT_SQUARE:
+						//Graphic::DrawRectangle({ static_cast<int>(head->x),static_cast<int>(head->y),static_cast<int>(head->width),static_cast<int>(head->height) });
+						break;
+					case OT_TEXT:
+						/* TODO:  display the text */
+						break;
+					case OT_TILE:
+						int gid = head->content.gid & TMX_FLIP_BITS_REMOVAL;
+						if (m_Map->tiles[gid] != NULL)
+						{
+							void* image;
+							tmx_tileset* ts = m_Map->tiles[gid]->tileset;
+							tmx_image* im = m_Map->tiles[gid]->image;
+							int x = static_cast<int>(m_Map->tiles[gid]->ul_x);
+							int y = static_cast<int>(m_Map->tiles[gid]->ul_y);
+							int w = static_cast<int>(ts->tile_width);
+							int h = static_cast<int>(ts->tile_height);
+							if (im)
+							{
+								image = im->resource_image;
+							}
+							else
+							{
+								image = ts->image->resource_image;
+							}
+							Sprite* sprite = Create_Sprite(image, x, y, w, h, static_cast<int>(head->x), static_cast<int>(head->y - head->height), 1, head->rotation);
+
+							LevelSprite ls = { LevelSpriteType::SPRITE, sprite };
+							m_LevelSprites.emplace_back(ls);
+						}
+						break;
+				}
+			}
+			head = head->next;
+		}
+	}
+
+	Sprite* Level::Create_Sprite(void* image, unsigned int sx, unsigned int sy, unsigned int sw, unsigned int sh,
+								 unsigned int dx, unsigned int dy, float opacity, double rotation)
+	{
+		SDL_Rect src_rect, dest_rect;
+		src_rect.x = sx;
+		src_rect.y = sy;
+		src_rect.w = dest_rect.w = sw;
+		src_rect.h = dest_rect.h = sh;
+		dest_rect.x = dx;
+		dest_rect.y = dy;
+		Texture* texture = new Texture { static_cast<SDL_Texture*>(image) };
+		texture->SetAngle(rotation);
+		Point* origin = new Point {};
+		origin->x = 0;
+		origin->y = sh;
+		texture->SetOrigin(origin);
+
+		Sprite* sprite = new Sprite { texture,
+									  static_cast<int>(sx), static_cast<int>(sy),
+									  static_cast<int>(sw), static_cast<int>(sh) };
+		sprite->SetDimensions({ static_cast<int>(dx), static_cast<int>(dy),
+								static_cast<int>(sw), static_cast<int>(sh) });
+		return sprite;
+	}
+
+
+
+
 
 	void Level::Update(double deltatime)
 	{}
 
 	void Level::Draw()
 	{
-		//Set_Color(m_Map->backgroundcolor);
-		Draw_All_Layers(m_Map, m_Map->ly_head);
+		//Draw_All_Layers(m_Map, m_Map->ly_head);
+
+		//
+		for (auto levelSprite : m_LevelSprites)
+		{
+			switch (levelSprite.type)
+			{
+				case LevelSpriteType::SPRITE:
+					Graphic::DrawSprite(static_cast<Sprite*>(levelSprite.content));
+					break;
+
+				case LevelSpriteType::TEXTURE:
+					Graphic::DrawTexture(static_cast<Texture*>(levelSprite.content));
+					break;
+
+				case LevelSpriteType::FONT:
+					Graphic::DrawSurface(static_cast<Font*>(levelSprite.content)->GetSurface());
+					break;
+			}
+		}
 	}
 
+	/*
 	void Level::Set_Color(int color)
 	{
 		tmx_col_bytes tmx_color = tmx_col_to_bytes(color);
@@ -40,19 +233,19 @@ namespace Dina
 
 				if (layers->type == L_GROUP)
 				{
-					Draw_All_Layers(map, layers->content.group_head); // recursive call
+					Draw_All_Layers(map, layers->content.group_head);
 				}
 				else if (layers->type == L_OBJGR)
 				{
-					Draw_Objects(map, layers->content.objgr); // Function to be implemented
+					Draw_Objects(map, layers->content.objgr);
 				}
 				else if (layers->type == L_IMAGE)
 				{
-					Draw_Image_Layer(layers->content.image); // Function to be implemented
+					Draw_Image_Layer(layers->content.image);
 				}
 				else if (layers->type == L_LAYER)
 				{
-					Draw_Layer(map, layers); // Function to be implemented
+					Draw_Layer(map, layers);
 				}
 			}
 			layers = layers->next;
@@ -85,16 +278,11 @@ namespace Dina
 					y = map->tiles[gid]->ul_y;
 					w = ts->tile_width;
 					h = ts->tile_height;
-					if (im)
-					{
-						image = im->resource_image;
-					}
-					else
-					{
-						image = ts->image->resource_image;
-					}
+
+					image = im ? im->resource_image : ts->image->resource_image;
+
 					flags = (layer->content.gids[(i * map->width) + j]) & ~TMX_FLIP_BITS_REMOVAL;
-					Draw_Tile(image, x, y, w, h, j * ts->tile_width, i * ts->tile_height, op, flags); // Function to be implemented
+					Draw_Tile(image, x, y, w, h, j * ts->tile_width, i * ts->tile_height, op, flags);
 				}
 			}
 		}
@@ -111,7 +299,7 @@ namespace Dina
 		dest_rect.y = dy;
 		Texture* texture = new Texture { static_cast<SDL_Texture*>(image) };
 		texture->SetAngle(rotation);
-		Point* origin = new Point{};
+		Point* origin = new Point {};
 		origin->x = 0;
 		origin->y = sh;
 		texture->SetOrigin(origin);
@@ -122,6 +310,7 @@ namespace Dina
 		sprite->SetDimensions({ static_cast<int>(dx), static_cast<int>(dy),
 								static_cast<int>(sw), static_cast<int>(sh) });
 		Graphic::DrawSprite(sprite);
+		delete sprite;
 	}
 	void Level::Draw_Polyline(double** points, double x, double y, int pointsc)
 	{
@@ -149,10 +338,10 @@ namespace Dina
 				switch (head->obj_type)
 				{
 					case OT_ELLIPSE:
-						/* No function in SDL2 */
+						// No function in SDL2
 						break;
 					case OT_POINT:
-						/* TODO: draw the point */
+						// TODO: draw the point
 						break;
 					case OT_POLYGON:
 						Draw_Polygon(head->content.shape->points, head->x, head->y, head->content.shape->points_len);
@@ -164,7 +353,7 @@ namespace Dina
 						Graphic::DrawRectangle({ static_cast<int>(head->x),static_cast<int>(head->y),static_cast<int>(head->width),static_cast<int>(head->height) });
 						break;
 					case OT_TEXT:
-						/* TODO:  display the text */
+						// TODO:  display the text
 						break;
 					case OT_TILE:
 						int gid = head->content.gid & TMX_FLIP_BITS_REMOVAL;
@@ -193,5 +382,5 @@ namespace Dina
 			head = head->next;
 		}
 	}
-
+	*/
 }
