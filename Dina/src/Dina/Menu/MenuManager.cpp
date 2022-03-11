@@ -23,9 +23,9 @@ namespace Dina
 		m_BackgroundTexture = new Texture(Graphic::LoadTexture("Datas/Images/Menu/Background.png"));
 	}
 
-	void MenuManager::AddTitle(const char* title, const char* fontName, int fontSize, SDL_Color color, bool withShadow, int offset, SDL_Color shadowColor)
+	void MenuManager::AddTitle(const char* title, int posY, const char* fontName, int fontSize, SDL_Color color, bool withShadow, int offset, SDL_Color shadowColor)
 	{
-		MenuTitle* menutitle = new MenuTitle(title, fontName, fontSize, color, withShadow, offset, shadowColor);
+		MenuTitle* menutitle = new MenuTitle(title, posY, fontName, fontSize, color, withShadow, offset, shadowColor);
 		m_Titles.push_back(menutitle);
 	}
 	void MenuManager::AddItem(const char* text, const char* fontName, int fontSize, std::function<void()> action, std::function<void()> hover, SDL_Color color, SDL_Color selectedColor)

@@ -17,7 +17,7 @@ namespace Dina
 		~MenuManager();
 
 		void SetBackground(const char* filePath);
-		void AddTitle(const char* title, const char* fontName, int fontSize, SDL_Color color = { 255,255,255,255 }, 
+		void AddTitle(const char* title, int posY, const char* fontName, int fontSize, SDL_Color color = { 255,255,255,255 }, 
 					  bool withShadow = false, int offset = 0, SDL_Color shadowColor = { 100,100,100,255 });
 
 		void AddItem(const char* text, const char* fontName, int fontSize, 

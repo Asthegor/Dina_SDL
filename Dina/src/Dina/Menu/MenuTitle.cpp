@@ -3,7 +3,7 @@
 
 namespace Dina
 {
-	MenuTitle::MenuTitle(const char* title, const char* fontName, int fontSize, SDL_Color color, bool withShadow, int offset, SDL_Color shadowColor)
+	MenuTitle::MenuTitle(const char* title, int posY, const char* fontName, int fontSize, SDL_Color color, bool withShadow, int offset, SDL_Color shadowColor)
 	{
 		m_Title = title;
 		m_WithShadow = withShadow;
@@ -19,7 +19,7 @@ namespace Dina
 				// Calcul de la position du titre
 				Quad* screen = Graphic::GetDimensions();
 				Quad* titleRect = m_TitleTexture->GetDimensions();
-				m_TitleTexture->SetPosition((screen->width - titleRect->width) / 2, screen->height / 8);
+				m_TitleTexture->SetPosition((screen->width - titleRect->width) / 2, posY);
 
 				if (withShadow)
 				{
