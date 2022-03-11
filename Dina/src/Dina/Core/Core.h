@@ -35,8 +35,8 @@ namespace Dina
 	template class DINA_API std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
 }
 // File GameState.h
-#include "Dina/Scene/State.h"
 #include <map>
+#include "Dina/Scene/State.h"
 namespace Dina
 {
 	template class DINA_API std::_Tree_val<std::_Tree_simple_types<std::pair<const std::string, Dina::State*>>>;
@@ -51,6 +51,7 @@ namespace Dina
 	template class DINA_API std::function<void()>;
 }
 // File MenuManager.h
+#include <vector>
 #include "Dina/Menu/MenuTitle.h"
 namespace Dina
 {
