@@ -51,6 +51,13 @@ namespace Dina
 	template class DINA_API std::function<void()>;
 }
 // File MenuManager.h
+#include "Dina/Menu/MenuTitle.h"
+namespace Dina
+{
+	template class DINA_API std::_Vector_val<std::_Simple_types<Dina::MenuTitle*>>;
+	template class DINA_API std::_Compressed_pair<std::allocator<Dina::MenuTitle*>, std::_Vector_val<std::_Simple_types<Dina::MenuTitle*>>, true>;
+	template class DINA_API std::vector<Dina::MenuTitle*, std::allocator<Dina::MenuTitle*>>;
+}
 #include "Dina/Menu/MenuItem.h"
 namespace Dina
 {

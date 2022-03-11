@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <vector>
 #include "MenuItem.h"
+#include "MenuTitle.h"
 #include "Dina/Graphic/Texture.h"
 #include "Dina/Graphic/Font.h"
 #include <functional>
@@ -16,7 +17,7 @@ namespace Dina
 		~MenuManager();
 
 		void SetBackground(const char* filePath);
-		void SetTitle(const char* title, const char* fontName, int fontSize, SDL_Color color = { 255,255,255,255 }, 
+		void AddTitle(const char* title, const char* fontName, int fontSize, SDL_Color color = { 255,255,255,255 }, 
 					  bool withShadow = false, int offset = 0, SDL_Color shadowColor = { 100,100,100,255 });
 
 		void AddItem(const char* text, const char* fontName, int fontSize, 
@@ -46,14 +47,12 @@ namespace Dina
 		int m_ItemsStartHeight = 0;
 		int m_ItemsPadding = 0;
 
+		std::vector<MenuTitle*> m_Titles;
+
 		std::vector<MenuItem*> items;
 		int m_CurrentSelectedItem = -1;
 
 		Texture* m_BackgroundTexture = nullptr;
-		Font* m_TitleFont = nullptr;
-		Font* m_TitleShadowFont = nullptr;
-		Texture* m_TitleTexture = nullptr;
-		Texture* m_TitleShadowTexture = nullptr;
 
 		bool m_KeyPressed = false;
 	};

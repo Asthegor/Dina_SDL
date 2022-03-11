@@ -116,6 +116,7 @@ xcopy $(ProjectDir)vendor\libxml2\bin\libxml2.dll $(SolutionDir)bin\$(Platform)-
     <ClInclude Include="src\dinapch.h" />
     <ClInclude Include="src\Dina\Levels\LevelSprite.h" />
     <ClInclude Include="src\Dina\Levels\MapGenerator.h" />
+    <ClInclude Include="src\Dina\Menu\MenuTitle.h" />
     <ClInclude Include="src\Dina\Utils\Collisions.h" />
     <ClInclude Include="src\Dina\Controllers\Controller.h" />
     <ClInclude Include="src\Dina\Controllers\Gamepad.h" />
@@ -161,6 +162,7 @@ xcopy $(ProjectDir)vendor\libxml2\bin\libxml2.dll $(SolutionDir)bin\$(Platform)-
     </ClCompile>
     <ClInclude Include="src\Dina\Core\EntryPoint.h" />
     <ClCompile Include="src\Dina\Levels\MapGenerator.cpp" />
+    <ClCompile Include="src\Dina\Menu\MenuTitle.cpp" />
     <ClCompile Include="src\Dina\Utils\Collisions.cpp" />
     <ClCompile Include="src\Dina\Controllers\Keyboard.cpp" />
     <ClCompile Include="src\Dina\Graphic\Animation.cpp" />

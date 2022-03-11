@@ -14,11 +14,7 @@ namespace Dina
 	MenuManager::~MenuManager()
 	{
 		delete m_BackgroundTexture;
-		delete m_TitleFont;
-		delete m_TitleShadowFont;
-		delete m_TitleTexture;
-		delete m_TitleShadowTexture;
-
+		m_Titles.clear();
 		items.clear();
 	}
 
@@ -27,33 +23,10 @@ namespace Dina
 		m_BackgroundTexture = new Texture(Graphic::LoadTexture("Datas/Images/Menu/Background.png"));
 	}
 
-	void MenuManager::SetTitle(const char* title, const char* fontName, int fontSize, SDL_Color color, bool withShadow, int offset, SDL_Color shadowColor)
+	void MenuManager::AddTitle(const char* title, const char* fontName, int fontSize, SDL_Color color, bool withShadow, int offset, SDL_Color shadowColor)
 	{
-		m_Title = title;
-		m_WithShadow = withShadow;
-
-
-		m_TitleFont = new Font(title, fontName, fontSize, Dina::FontRender::Blended, color);
-		if (m_TitleFont)
-		{
-			m_TitleTexture = new Texture(Graphic::CreateTextureFromSurface(m_TitleFont->GetSurface()));
-
-			if (m_TitleTexture)
-			{
-				// Calcul de la position du titre
-				Quad* screen = Graphic::GetDimensions();
-				Quad* titleRect = m_TitleTexture->GetDimensions();
-				m_TitleTexture->SetPosition((screen->width - titleRect->width) / 2, screen->height / 8);
-
-				if (withShadow)
-				{
-					m_TitleShadowFont = new Font(title, fontName, fontSize, Dina::FontRender::Blended, shadowColor);
-					m_TitleShadowTexture = new Texture(Graphic::CreateTextureFromSurface(m_TitleShadowFont->GetSurface()));
-					titleRect = m_TitleTexture->GetDimensions();
-					m_TitleShadowTexture->SetPosition(titleRect->x + offset, titleRect->y + offset);
-				}
-			}
-		}
+		MenuTitle* menutitle = new MenuTitle(title, fontName, fontSize, color, withShadow, offset, shadowColor);
+		m_Titles.push_back(menutitle);
 	}
 	void MenuManager::AddItem(const char* text, const char* fontName, int fontSize, std::function<void()> action, std::function<void()> hover, SDL_Color color, SDL_Color selectedColor)
 	{
@@ -108,12 +81,9 @@ namespace Dina
 			Graphic::DrawTexture(m_BackgroundTexture);
 
 		// Title
-		if (m_TitleTexture)
+		for (auto& title : m_Titles)
 		{
-			if (m_WithShadow && m_TitleShadowTexture)
-				Graphic::DrawTexture(m_TitleShadowTexture);
-
-			Graphic::DrawTexture(m_TitleTexture);
+			title->Draw();
 		}
 
 		// Items

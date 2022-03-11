@@ -1,5 +1,4 @@
 #pragma once
-#include "Graphic.h"
 #include "Quad.h"
 #include <SDL.h>
 
