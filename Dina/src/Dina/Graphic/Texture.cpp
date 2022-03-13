@@ -83,10 +83,19 @@ namespace Dina
 
 	void Texture::SetOrigin(Point* point)
 	{
-		if (!m_Origin)
-			m_Origin = new Point;
-		m_Origin->x = point->x;
-		m_Origin->y = point->y;
+		if (point)
+		{
+			if (!m_Origin)
+				m_Origin = new Point;
+			m_Origin->x = point->x;
+			m_Origin->y = point->y;
+		}
+		else
+		{
+			if (m_Origin)
+				delete m_Origin;
+			m_Origin = nullptr;
+		}
 	}
 
 	void Texture::SetFlip(SDL_RendererFlip flip)

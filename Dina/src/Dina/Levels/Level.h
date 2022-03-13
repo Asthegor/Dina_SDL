@@ -16,10 +16,12 @@ namespace Dina
 		virtual ~Level();
 
 		void Load(const char* fileName);
-
 		void Update(double deltatime);
+		void Draw(int offsetX = 0, int offsetY = 0);
 
-		void Draw();
+		Point GetDimensions();
+		std::vector<int> GetIds(int col, int row);
+		Point ConvertCoordToRowCol(Point point);
 
 	private:
 		tmx_map* m_Map = nullptr;

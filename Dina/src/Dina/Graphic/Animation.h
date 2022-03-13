@@ -21,8 +21,11 @@ namespace Dina
         void Draw();
 
         Quad* GetDimensions();
+        Point* GetOrigin();
         void SetPosition(int x, int y);
         void SetDimensions(Quad dimensions);
+        void SetRotation(double angle);
+        void SetOrigin(Point* point);
 
     private:
         std::vector<Texture*> m_Animation;

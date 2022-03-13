@@ -16,7 +16,9 @@ namespace Dina
 	void Level::Load(const char* fileName)
 	{
 		m_Map = tmx_load(fileName);
-		DINA_CORE_ASSERT(m_Map, "Unable to load '{0}' map", fileName);
+		DINA_CORE_ASSERT(m_Map != nullptr, "Unable to load '{0}' map", fileName);
+		if (!m_Map)
+			DINA_CORE_ERROR("Unable to load '{0}' map", fileName);
 
 		// TODO:
 		// 1) Charger les tilsets et les stocker
@@ -27,10 +29,6 @@ namespace Dina
 		//	  et les stocker dans un tableau (std::vector)
 		//
 		Create_Sprites(m_Map->ly_head);
-
-		DINA_CORE_TRACE("--------------------------------------------------------------");
-		DINA_CORE_TRACE("--------------------------------------------------------------");
-		DINA_CORE_TRACE("--------------------------------------------------------------");
 	}
 
 	void Level::Create_Sprites(tmx_layer* layer)
@@ -174,10 +172,7 @@ namespace Dina
 		dest_rect.y = dy;
 		Texture* texture = new Texture { static_cast<SDL_Texture*>(image) };
 		texture->SetAngle(rotation);
-		Point* origin = new Point {};
-		origin->x = 0;
-		origin->y = sh;
-		texture->SetOrigin(origin);
+		texture->SetOrigin(new Point(0, sh));
 
 		Sprite* sprite = new Sprite { texture,
 									  static_cast<int>(sx), static_cast<int>(sy),
@@ -194,7 +189,7 @@ namespace Dina
 	void Level::Update(double deltatime)
 	{}
 
-	void Level::Draw()
+	void Level::Draw(int offsetX, int offsetY)
 	{
 		//Draw_All_Layers(m_Map, m_Map->ly_head);
 
@@ -204,18 +199,74 @@ namespace Dina
 			switch (levelSprite.type)
 			{
 				case LevelSpriteType::SPRITE:
-					Graphic::DrawSprite(static_cast<Sprite*>(levelSprite.content));
+					{
+						Sprite* sprite = static_cast<Sprite*>(levelSprite.content);
+						Quad oldSpriteDim = *(sprite->GetDimensions());
+						Quad* dim = sprite->GetDimensions();
+						int x = dim->x - offsetX;
+						int y = dim->y - offsetY;
+						sprite->SetDimensions({ x, y, dim->width, dim->height });
+						Graphic::DrawSprite(sprite);
+						sprite->SetDimensions({ oldSpriteDim.x, oldSpriteDim.y, oldSpriteDim.width, oldSpriteDim.height });
+					}
 					break;
 
 				case LevelSpriteType::TEXTURE:
-					Graphic::DrawTexture(static_cast<Texture*>(levelSprite.content));
+					{
+						Texture* texture = static_cast<Texture*>(levelSprite.content);
+						Quad* dim = texture->GetDimensions();
+						dim->x -= offsetX;
+						dim->y -= offsetY;
+						Graphic::DrawTexture(texture);
+					}
 					break;
 
 				case LevelSpriteType::FONT:
-					Graphic::DrawSurface(static_cast<Font*>(levelSprite.content)->GetSurface());
+					//Font* font = static_cast<Font*>(levelSprite.content);
+					//Graphic::DrawSurface(font->GetSurface(), offsetX, offsetY);
 					break;
 			}
 		}
+	}
+
+	Point Level::GetDimensions()
+	{
+		return { static_cast<int>(m_Map->width * m_Map->tile_width), static_cast<int>(m_Map->height * m_Map->tile_height) };
+	}
+
+	std::vector<int> Level::GetIds(int col, int row)
+	{
+		std::vector<int> ids;
+		tmx_layer* layer = m_Map->ly_head;
+		while (layer)
+		{
+			if (layer->type == L_LAYER)
+			{
+				auto gid = (layer->content.gids[(row * m_Map->width) + col]) & TMX_FLIP_BITS_REMOVAL;
+				ids.push_back(static_cast<int>(gid));
+			}
+		}
+		return ids;
+	}
+
+	Point Level::ConvertCoordToRowCol(Point point)
+	{
+		Point res;
+
+		int mw = static_cast<int>(m_Map->width);
+		int mh = static_cast<int>(m_Map->height);
+		int tw = m_Map->tile_width;
+		int th = m_Map->tile_height;
+
+		unsigned int col = static_cast<int>(std::floor(static_cast<double>(point.x) / static_cast<double>(m_Map->tile_width)) + 1.0);
+		unsigned int row = static_cast<int>(std::floor(static_cast<double>(point.y) / static_cast<double>(m_Map->tile_height)));
+		if (point.x < 0 || point.x > static_cast<int>(m_Map->width * m_Map->tile_width))
+			res.x = -1;
+
+		if (point.y < 0 || point.y > static_cast<int>(m_Map->height * m_Map->tile_height))
+			res.y = -1;
+
+		return res;
 	}
 
 	/*
@@ -299,10 +350,7 @@ namespace Dina
 		dest_rect.y = dy;
 		Texture* texture = new Texture { static_cast<SDL_Texture*>(image) };
 		texture->SetAngle(rotation);
-		Point* origin = new Point {};
-		origin->x = 0;
-		origin->y = sh;
-		texture->SetOrigin(origin);
+		texture->SetOrigin(new Point(0, sh));
 
 		Sprite* sprite = new Sprite { texture,
 									  static_cast<int>(sx), static_cast<int>(sy),

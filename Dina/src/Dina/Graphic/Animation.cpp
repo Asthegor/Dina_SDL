@@ -98,39 +98,74 @@ namespace Dina
 		}
 		return nullptr;
 	}
+	Point* Animation::GetOrigin()
+	{
+		if (m_UsingSpritesheet)
+		{
+			if (m_Frame >= 0 && m_Frame < m_Spritesheet->GetNbSprites() && m_Spritesheet->GetSprite(m_Frame))
+			{
+				return m_Spritesheet->GetSprite(m_Frame)->GetTexture()->GetOrigin();
+			}
+		}
+		else
+		{
+			if (m_Frame >= 0 && m_Frame < m_Animation.size() && m_Animation[m_Frame])
+			{
+				return m_Animation[m_Frame]->GetOrigin();
+			}
+		}
+		return nullptr;
+	}
 	void Animation::SetPosition(int x, int y)
 	{
 		if (m_UsingSpritesheet)
 		{
-			if (m_Frame >= 0 && m_Frame < m_Spritesheet->GetNbSprites() && m_Spritesheet->GetSprite(m_Frame))
-			{
-				m_Spritesheet->GetSprite(m_Frame)->SetPosition(x, y);
-			}
+			for(int i = 0; i < m_Spritesheet->GetNbSprites(); ++i)
+				m_Spritesheet->GetSprite(i)->SetPosition(x, y);
 		}
 		else
 		{
-			if (m_Frame >= 0 && m_Frame < m_Animation.size() && m_Animation[m_Frame])
-			{
-				m_Animation[m_Frame]->SetPosition(x, y);
-			}
+			for (auto& texture : m_Animation)
+				texture->SetPosition(x, y);
 		}
 	}
 	void Animation::SetDimensions(Quad dimensions)
 	{
-
 		if (m_UsingSpritesheet)
 		{
-			if (m_Frame >= 0 && m_Frame < m_Spritesheet->GetNbSprites() && m_Spritesheet->GetSprite(m_Frame))
-			{
-				m_Spritesheet->GetSprite(m_Frame)->SetDimensions(dimensions);
-			}
+			for (int i = 0; i < m_Spritesheet->GetNbSprites(); ++i)
+				m_Spritesheet->GetSprite(i)->SetDimensions(dimensions);
 		}
 		else
 		{
-			if (m_Frame >= 0 && m_Frame < m_Animation.size() && m_Animation[m_Frame])
-			{
-				m_Animation[m_Frame]->SetDimensions(dimensions);
-			}
+			for (auto& texture : m_Animation)
+				texture->SetDimensions(dimensions);
+		}
+	}
+	void Animation::SetRotation(double angle)
+	{
+		if (m_UsingSpritesheet)
+		{
+			for (int i = 0; i < m_Spritesheet->GetNbSprites(); ++i)
+				m_Spritesheet->GetSprite(i)->GetTexture()->SetAngle(angle);
+		}
+		else
+		{
+			for (auto& texture : m_Animation)
+				texture->SetAngle(angle);
+		}
+	}
+	void Animation::SetOrigin(Point* point)
+	{
+		if (m_UsingSpritesheet)
+		{
+			for (int i = 0; i < m_Spritesheet->GetNbSprites(); ++i)
+				m_Spritesheet->GetSprite(i)->GetTexture()->SetOrigin(point);
+		}
+		else
+		{
+			for (auto& texture : m_Animation)
+				texture->SetOrigin(point);
 		}
 	}
 }
