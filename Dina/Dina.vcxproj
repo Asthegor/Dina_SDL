@@ -114,6 +114,7 @@ xcopy $(ProjectDir)vendor\libxml2\bin\libxml2.dll $(SolutionDir)bin\$(Platform)-
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\dinapch.h" />
+    <ClInclude Include="src\Dina\Core\Points.h" />
     <ClInclude Include="src\Dina\Levels\LevelSprite.h" />
     <ClInclude Include="src\Dina\Levels\MapGenerator.h" />
     <ClInclude Include="src\Dina\Menu\MenuTitle.h" />
@@ -161,6 +162,7 @@ xcopy $(ProjectDir)vendor\libxml2\bin\libxml2.dll $(SolutionDir)bin\$(Platform)-
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClInclude Include="src\Dina\Core\EntryPoint.h" />
+    <ClCompile Include="src\Dina\Core\Points.cpp" />
     <ClCompile Include="src\Dina\Levels\MapGenerator.cpp" />
     <ClCompile Include="src\Dina\Menu\MenuTitle.cpp" />
     <ClCompile Include="src\Dina\Utils\Collisions.cpp" />
@@ -198,6 +200,5 @@ xcopy $(ProjectDir)vendor\libxml2\bin\libxml2.dll $(SolutionDir)bin\$(Platform)-
     <Image Include="src\Logo.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

@@ -25,6 +25,8 @@ namespace Dina
 
 		//Conversions
 		static SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
+		static SDL_Texture* CreateTexture(int width, int height);
+		static void AddSpriteToTexture(SDL_Texture* texture);
 
 		//Drawing
 		static void DrawTexture(Texture* texture, SDL_Color color = {255,255,255,255});

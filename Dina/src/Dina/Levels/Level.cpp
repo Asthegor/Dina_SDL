@@ -1,11 +1,12 @@
 #include "dinapch.h"
 #include "Level.h"
+#include <vector>
 
 namespace Dina
 {
-	Level::Level()
+	Level::Level() :
+		m_Scale({ 1, 1 })
 	{
-
 	}
 
 	Level::~Level()
@@ -18,47 +19,47 @@ namespace Dina
 		m_Map = tmx_load(fileName);
 		DINA_CORE_ASSERT(m_Map != nullptr, "Unable to load '{0}' map", fileName);
 		if (!m_Map)
+		{
 			DINA_CORE_ERROR("Unable to load '{0}' map", fileName);
-
-		// TODO:
-		// 1) Charger les tilsets et les stocker
-		// ==> Déjà fait à l'aide de la fonction LoadVoidTexture définie dans set_alloc_functions de tmx_mem.cpp
-		// Les tilesets sont stockés dans m_Map->ts_head(*)->tileset(*)->image->resource_image
-		// 
-		// 2) Créer un objet Sprite pour chacune des cases de ma grille (déjà existant)
-		//	  et les stocker dans un tableau (std::vector)
-		//
-		Create_Sprites(m_Map->ly_head);
+			return;
+		}
+		Generate_Datas(m_Map->ly_head);
 	}
 
-	void Level::Create_Sprites(tmx_layer* layer)
+
+	void Level::Generate_Datas(tmx_layer* layer, tmx_layer* parent_layer)
 	{
 		while (layer)
 		{
-			if (layer->visible)
+			switch (layer->type)
 			{
-				switch (layer->type)
-				{
-					case L_GROUP:
-						Create_Sprites(layer->content.group_head);
-						break;
-					case L_OBJGR:
-						Create_Objects(layer->content.objgr);
-						break;
-					case L_IMAGE:
-						Create_ImageSprite(layer->content.image);
+				case L_GROUP:
+					{
+						Generate_Datas(layer->content.group_head, parent_layer);
+					}
+					break;
+				case L_OBJGR:
+					{
+						Create_Objects(layer->content.objgr, parent_layer);
+					}
+					break;
+				case L_IMAGE:
+					{
+						Create_ImageSprite(layer->content.image, parent_layer);
 						//Draw_Image_Layer(layer->content.image);
-						break;
-					case L_LAYER:
-						Create_LayerSprites(layer);
-						break;
-				}
+					}
+					break;
+				case L_LAYER:
+					{
+						Create_LayerSprites(layer, parent_layer);
+					}
+					break;
 			}
 			layer = layer->next;
 		}
 
 	}
-	void Level::Create_ImageSprite(tmx_image* image)
+	void Level::Create_ImageSprite(tmx_image* image, tmx_layer* parent_layer)
 	{
 		if (image)
 		{
@@ -68,17 +69,31 @@ namespace Dina
 				LevelSprite ls = { LevelSpriteType::TEXTURE, texture };
 				m_LevelSprites.emplace_back(ls);
 			}
+			else
+				DINA_CORE_WARN("Texture not created");
 		}
+		else
+			DINA_CORE_WARN("Image not found");
 	}
-	void Level::Create_LayerSprites(tmx_layer* layer)
+	void Level::Create_LayerSprites(tmx_layer* layer, tmx_layer* parent_layer)
 	{
+		SDL_Texture* texture = Graphic::CreateTexture(m_Map->width * m_Map->tile_width, m_Map->height * m_Map->tile_height);
+
 		unsigned long i, j;
 		unsigned int gid, x, y, w, h, flags;
-		float op;
 		tmx_tileset* ts;
 		tmx_image* im;
 		void* image;
-		op = static_cast<float>(layer->opacity);
+		if (parent_layer)
+		{
+			layer->opacity *= parent_layer->opacity;
+			layer->offsetx += parent_layer->offsetx;
+			layer->offsety += parent_layer->offsety;
+		}
+		float op = static_cast<float>(layer->opacity);
+		unsigned int offsetX = static_cast<unsigned int>(layer->offsetx * m_Scale.x);
+		unsigned int offsetY = static_cast<unsigned int>(layer->offsety * m_Scale.y);
+
 		for (i = 0; i < m_Map->height; i++)
 		{
 			for (j = 0; j < m_Map->width; j++)
@@ -88,15 +103,15 @@ namespace Dina
 				{
 					ts = m_Map->tiles[gid]->tileset;
 					im = m_Map->tiles[gid]->image;
-					x = m_Map->tiles[gid]->ul_x;
-					y = m_Map->tiles[gid]->ul_y;
+					x = static_cast<unsigned int>(m_Map->tiles[gid]->ul_x * m_Scale.x);
+					y = static_cast<unsigned int>(m_Map->tiles[gid]->ul_y * m_Scale.y);
 					w = ts->tile_width;
 					h = ts->tile_height;
-
+					
 					image = im ? im->resource_image : ts->image->resource_image;
 
 					flags = (layer->content.gids[(i * m_Map->width) + j]) & ~TMX_FLIP_BITS_REMOVAL;
-					Sprite* sprite = Create_Sprite(image, x, y, w, h, j * ts->tile_width, i * ts->tile_height, op, flags);
+					Sprite* sprite = Create_Sprite(image, x + offsetX, y + offsetY, w, h, j * ts->tile_width, i * ts->tile_height, op, flags);
 
 					LevelSprite ls = { LevelSpriteType::SPRITE, sprite };
 					m_LevelSprites.emplace_back(ls);
@@ -105,7 +120,7 @@ namespace Dina
 		}
 	}
 
-	void Level::Create_Objects(tmx_object_group* objgr)
+	void Level::Create_Objects(tmx_object_group* objgr, tmx_layer* parent_layer)
 	{
 		tmx_object* head = objgr->head;
 		while (head)
@@ -234,20 +249,22 @@ namespace Dina
 		return { static_cast<int>(m_Map->width * m_Map->tile_width), static_cast<int>(m_Map->height * m_Map->tile_height) };
 	}
 
-	std::vector<int> Level::GetIds(int col, int row)
+	bool Level::HasId(int col, int row)
 	{
-		std::vector<int> ids;
 		tmx_layer* layer = m_Map->ly_head;
 		while (layer)
 		{
-			if (layer->type == L_LAYER)
+			auto gid = GetIdFromLayer(layer, col, row);
+			if (gid > 0)
 			{
-				auto gid = (layer->content.gids[(row * m_Map->width) + col]) & TMX_FLIP_BITS_REMOVAL;
-				ids.push_back(static_cast<int>(gid));
+				return true;
 			}
+			layer = layer->next;
 		}
-		return ids;
+		return false;
 	}
+
+
 
 	Point Level::ConvertCoordToRowCol(Point point)
 	{
@@ -258,15 +275,30 @@ namespace Dina
 		int tw = m_Map->tile_width;
 		int th = m_Map->tile_height;
 
-		unsigned int col = static_cast<int>(std::floor(static_cast<double>(point.x) / static_cast<double>(m_Map->tile_width)) + 1.0);
-		unsigned int row = static_cast<int>(std::floor(static_cast<double>(point.y) / static_cast<double>(m_Map->tile_height)));
 		if (point.x < 0 || point.x > static_cast<int>(m_Map->width * m_Map->tile_width))
 			res.x = -1;
+		else
+			res.x = static_cast<int>(std::floor(static_cast<double>(point.x) / static_cast<double>(m_Map->tile_width)) + 1.0);
 
 		if (point.y < 0 || point.y > static_cast<int>(m_Map->height * m_Map->tile_height))
 			res.y = -1;
+		else
+			res.y = static_cast<int>(std::floor(static_cast<double>(point.y) / static_cast<double>(m_Map->tile_height)));
 
 		return res;
+	}
+
+	unsigned int Level::GetIdFromLayer(tmx_layer* layer, int col, int row)
+	{
+		switch (layer->type)
+		{
+			case L_GROUP:
+				return GetIdFromLayer(layer->content.group_head, col, row);
+			case L_LAYER:
+				return layer->content.gids[(row * m_Map->width) + col];
+			default:
+				return 0;
+		}
 	}
 
 	/*

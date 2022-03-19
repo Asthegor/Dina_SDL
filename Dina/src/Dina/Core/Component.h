@@ -8,14 +8,11 @@ namespace Dina
 	class DINA_API Component : public Event
 	{
 	public:
-		virtual ~Component()
-		{}
+		Component() = default;
+		virtual ~Component() = default;
+		virtual void Load() = 0;
 		virtual void Update(double deltatime) = 0;
 		virtual void Draw() = 0;
-		virtual void Load() = 0;
-
-	protected:
-		SDL_Renderer* renderer;
-
+	private:
 	};
 }

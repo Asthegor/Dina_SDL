@@ -20,17 +20,27 @@ namespace Dina
 		void Draw(int offsetX = 0, int offsetY = 0);
 
 		Point GetDimensions();
-		std::vector<int> GetIds(int col, int row);
+
+
+		bool HasId(int col, int row);
 		Point ConvertCoordToRowCol(Point point);
 
 	private:
 		tmx_map* m_Map = nullptr;
+		FPoint m_Scale;
+		FPoint m_Offset;
+
+		//std::vector<Surface*> m_Surfaces;
+
+		void Generate_Datas(tmx_layer* layer, tmx_layer* parent_layer = nullptr);
 
 
-		void Create_Sprites(tmx_layer* layer);
-		void Create_ImageSprite(tmx_image* image);
-		void Create_LayerSprites(tmx_layer* layer);
-		void Create_Objects(tmx_object_group* objgr);
+
+		unsigned int GetIdFromLayer(tmx_layer* layer, int col, int row);
+
+		void Create_ImageSprite(tmx_image* image, tmx_layer* parent_layer = nullptr);
+		void Create_LayerSprites(tmx_layer* layer, tmx_layer* parent_layer = nullptr);
+		void Create_Objects(tmx_object_group* objgr, tmx_layer* parent_layer = nullptr);
 
 		Sprite* Create_Sprite(void* image, unsigned int sx, unsigned int sy, unsigned int sw, unsigned int sh,
 							  unsigned int dx, unsigned int dy, float opacity, double rotation);

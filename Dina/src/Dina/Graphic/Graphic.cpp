@@ -84,6 +84,11 @@ namespace Dina
 		return nullptr;
 	}
 
+	SDL_Texture* Graphic::CreateTexture(int width, int height)
+	{
+		return SDL_CreateTexture(GetInstance()->m_Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
+	}
+
 	SDL_Texture* Graphic::LoadTexture(const char* filePath)
 	{
 		SDL_Texture* texture = nullptr;
