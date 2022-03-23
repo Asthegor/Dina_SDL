@@ -244,6 +244,25 @@ namespace Dina
 		}
 	}
 
+	void Graphic::DrawPoint(Point point, SDL_Color color)
+	{
+		int success;
+		success = SDL_SetRenderDrawColor(GetInstance()->m_Renderer, color.r, color.g, color.b, color.a);
+		if (success != 0)
+			DINA_CORE_ERROR("Unable to change the color on the renderer");
+
+		success = SDL_RenderDrawPoint(GetInstance()->m_Renderer, point.x, point.y);
+		if (success != 0)
+			DINA_CORE_ERROR("Unable to draw the point on the renderer");
+
+		success = SDL_SetRenderDrawColor(GetInstance()->m_Renderer, 255, 255, 255, 255);
+		if (success != 0)
+			DINA_CORE_ERROR("Unable to change the color on the renderer");
+	}
+
+	//void Graphic::DrawCircle(Point point, SDL_Color color)
+	//{}
+
 	void Graphic::Quit()
 	{
 		DestroyInstance();

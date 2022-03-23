@@ -47,7 +47,10 @@ namespace Dina
 					}
 				case SDL_EventType::SDL_MOUSEBUTTONDOWN:
 					{
-						GetInstance()->m_MousePressed = true;
+						if (!GetInstance()->m_LastMouseEvent || event.button.timestamp != GetInstance()->m_LastMouseEvent->button.timestamp)
+							GetInstance()->m_MousePressed = true;
+						else
+							DINA_CORE_WARN("Warning : double mouse button event");
 						if (GetInstance()->m_LastMouseEvent)
 							delete GetInstance()->m_LastMouseEvent;
 						GetInstance()->m_LastMouseEvent = new SDL_Event(event);

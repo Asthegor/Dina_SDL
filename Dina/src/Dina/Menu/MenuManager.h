@@ -21,7 +21,7 @@ namespace Dina
 					  bool withShadow = false, int offset = 0, SDL_Color shadowColor = { 100,100,100,255 });
 
 		void AddItem(const char* text, const char* fontName, int fontSize, 
-					 std::function<void()> action = nullptr, std::function<void()> hover = nullptr, 
+					 std::function<void(MenuItem*)> action = nullptr, std::function<void(MenuItem*,bool)> hover = nullptr, 
 					 SDL_Color color = { 255,255,255,255 }, SDL_Color selectedColor = { 255,255,255,255 });
 
 		void SetItemsStartHeight(int startHeight);

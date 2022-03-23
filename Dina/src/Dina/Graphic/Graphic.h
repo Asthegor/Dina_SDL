@@ -26,7 +26,8 @@ namespace Dina
 		//Conversions
 		static SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
 		static SDL_Texture* CreateTexture(int width, int height);
-		static void AddSpriteToTexture(SDL_Texture* texture);
+		//static SDL_Surface* CreateSurface(int width, int height);
+		//static void AddSpriteToTexture(SDL_Texture* texture);
 
 		//Drawing
 		static void DrawTexture(Texture* texture, SDL_Color color = {255,255,255,255});
@@ -38,6 +39,9 @@ namespace Dina
 
 		static void DrawPointOnSurface(SDL_Surface* surface, Point point, SDL_Color color = { 255,255,255,255 });
 		static void DrawCircleOnSurface(SDL_Surface* surface, Point point, int radius, ShapeMode shapeMode = ShapeMode::Line, SDL_Color color = { 255,255,255,255 });
+
+		static void DrawPoint(Point point, SDL_Color color = { 255,255,255,255 });
+		//static void DrawCircle(Point point, SDL_Color color = { 255,255,255,255 });
 
 		static void Clear();
 		static void Render();

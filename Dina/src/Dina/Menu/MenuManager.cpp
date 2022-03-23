@@ -28,7 +28,7 @@ namespace Dina
 		MenuTitle* menutitle = new MenuTitle(title, posY, fontName, fontSize, color, withShadow, offset, shadowColor);
 		m_Titles.push_back(menutitle);
 	}
-	void MenuManager::AddItem(const char* text, const char* fontName, int fontSize, std::function<void()> action, std::function<void()> hover, SDL_Color color, SDL_Color selectedColor)
+	void MenuManager::AddItem(const char* text, const char* fontName, int fontSize, std::function<void(MenuItem*)> action, std::function<void(MenuItem*,bool)> hover, SDL_Color color, SDL_Color selectedColor)
 	{
 		MenuItem* item = new MenuItem { text, fontName, fontSize, color, selectedColor };
 		item->SetAction(action);
@@ -60,9 +60,9 @@ namespace Dina
 		for (int i = 0; i < items.size(); ++i)
 		{
 			Quad* itemDimension = items[i]->GetDimensions();
-			itemDimension->x = (screen->width - itemDimension->width) / 2;
-			itemDimension->y = i == 0 ? m_ItemsStartHeight : nextHeight;
-			nextHeight = itemDimension->y + itemDimension->height + m_ItemsPadding;
+			int y = i == 0 ? m_ItemsStartHeight : nextHeight;
+			items[i]->CenterOnY(y, 0, screen->width);
+			nextHeight = y + itemDimension->height + m_ItemsPadding;
 		}
 	}
 
@@ -122,6 +122,7 @@ namespace Dina
 			if (Collisions::Collide({ x, y }, *item->GetDimensions()))
 			{
 				item->SetSelected(true);
+
 				if (m_CurrentSelectedItem < 0 || items[m_CurrentSelectedItem] != item)
 				{
 					for (int i = 0; i < items.size(); ++i)
@@ -133,10 +134,15 @@ namespace Dina
 						}
 					}
 				}
+				item->LaunchHover(true);
 			}
 			else
+			{
 				item->SetSelected(false);
+				item->LaunchHover(false);
+			}
 		}
+		SetItemsPositions();
 	}
 	void MenuManager::OnMousePressed(int button, int x, int y, int clicks)
 	{

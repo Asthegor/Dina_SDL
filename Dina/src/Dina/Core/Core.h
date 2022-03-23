@@ -48,7 +48,9 @@ namespace Dina
 #include <functional>
 namespace Dina
 {
-	template class DINA_API std::function<void()>;
+	class DINA_API MenuItem;
+	template class DINA_API std::function<void(Dina::MenuItem*)>;
+	template class DINA_API std::function<void(Dina::MenuItem*,bool)>;
 }
 // File MenuManager.h
 #include <vector>
@@ -65,6 +67,7 @@ namespace Dina
 	template class DINA_API std::_Vector_val<std::_Simple_types<Dina::MenuItem*>>;
 	template class DINA_API std::_Compressed_pair<std::allocator<Dina::MenuItem*>, std::_Vector_val<std::_Simple_types<Dina::MenuItem*>>, true>;
 	template class DINA_API std::vector<Dina::MenuItem*, std::allocator<Dina::MenuItem*>>;
+	
 }
 // File Random.h
 #include <random>
@@ -103,4 +106,5 @@ namespace Dina
 	template class DINA_API std::_Compressed_pair<std::allocator<Dina::LevelSprite>, std::_Vector_val<std::_Simple_types<Dina::LevelSprite>>, true>;
 	template class DINA_API std::vector<Dina::LevelSprite, std::allocator<Dina::LevelSprite>>;
 }
+
 /*************************************************************************************************************/
